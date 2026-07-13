@@ -1,0 +1,17 @@
+# Base configuration for cc-teams-service.
+# Manages team creation, membership, captaincy and invitations.
+# JWT secret must match the one used by cc-identity-service.
+
+spring:
+  application:
+    name: cc-teams-service
+  profiles:
+    active: dev
+
+server:
+  # CONFIRM PORT WITH THE OTHER MICROSERVICES TEAMS
+  port: 11712
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:super-secret-key-that-is-at-least-256-bits-long-for-hs256}

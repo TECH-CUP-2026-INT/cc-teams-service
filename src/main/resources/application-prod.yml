@@ -1,0 +1,9 @@
+﻿spring:
+  data:
+    mongodb:
+      uri: ${MONGO_URI}
+
+logging:
+  level:
+    root: WARN
+    com.techcup.ccteams: INFO

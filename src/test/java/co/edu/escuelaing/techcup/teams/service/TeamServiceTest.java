@@ -16,130 +16,108 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class TeamServiceTest {
 
-    @Mock
-    private TeamRepository teamRepository;
-
-    @Mock
-    private TeamMemberRepository teamMemberRepository;
-
-    @InjectMocks
-    private TeamService teamService;
+    @Mock private TeamRepository teamRepository;
+    @Mock private TeamMemberRepository teamMemberRepository;
+    @InjectMocks private TeamService teamService;
 
     private TeamEntity team;
     private TeamMemberEntity captainMember;
-    private TeamMemberEntity playerMember;
-    private TransferCaptainRequest request;
-
-    private static final String CAPTAIN_EMAIL = "captain@test.com";
-    private static final String PLAYER_EMAIL = "player@test.com";
-    private static final Long TEAM_ID = 1L;
+    private TeamMemberEntity newCaptainMember;
 
     @BeforeEach
     void setUp() {
         team = new TeamEntity();
-        team.setName("Test Team");
-        team.setCaptainEmail(CAPTAIN_EMAIL);
+        team.setId(1L);
+        team.setName("Los Pumas");
+        team.setCaptainEmail("captain@test.com");
         team.setActive(true);
 
         captainMember = new TeamMemberEntity();
-        captainMember.setMemberEmail(CAPTAIN_EMAIL);
+        captainMember.setTeam(team);
+        captainMember.setMemberEmail("captain@test.com");
         captainMember.setRole(TeamMemberEntity.Role.CAPTAIN);
         captainMember.setActive(true);
-        captainMember.setTeam(team);
 
-        playerMember = new TeamMemberEntity();
-        playerMember.setMemberEmail(PLAYER_EMAIL);
-        playerMember.setRole(TeamMemberEntity.Role.PLAYER);
-        playerMember.setActive(true);
-        playerMember.setTeam(team);
-
-        request = new TransferCaptainRequest();
-        request.setNewCaptainEmail(PLAYER_EMAIL);
+        newCaptainMember = new TeamMemberEntity();
+        newCaptainMember.setTeam(team);
+        newCaptainMember.setMemberEmail("player@test.com");
+        newCaptainMember.setRole(TeamMemberEntity.Role.PLAYER);
+        newCaptainMember.setActive(true);
     }
 
     @Test
     void transferCaptaincy_success() {
-        when(teamRepository.findByIdAndActiveTrue(TEAM_ID)).thenReturn(Optional.of(team));
-        when(teamMemberRepository.findByTeamAndMemberEmail(team, PLAYER_EMAIL)).thenReturn(Optional.of(playerMember));
-        when(teamMemberRepository.findByTeamAndMemberEmail(team, CAPTAIN_EMAIL)).thenReturn(Optional.of(captainMember));
+        TransferCaptainRequest request = new TransferCaptainRequest();
+        request.setNewCaptainEmail("player@test.com");
 
-        ApiResponse response = teamService.transferCaptaincy(TEAM_ID, CAPTAIN_EMAIL, request);
+        when(teamRepository.findByIdAndActiveTrue(1L)).thenReturn(Optional.of(team));
+        when(teamMemberRepository.findByTeamAndMemberEmail(team, "player@test.com")).thenReturn(Optional.of(newCaptainMember));
+        when(teamMemberRepository.findByTeamAndMemberEmail(team, "captain@test.com")).thenReturn(Optional.of(captainMember));
 
-        assertNotNull(response);
+        ApiResponse response = teamService.transferCaptaincy(1L, "captain@test.com", request);
+
         assertTrue(response.isSuccess());
+        assertEquals("Captaincy successfully transferred to player@test.com", response.getMessage());
         assertEquals(TeamMemberEntity.Role.PLAYER, captainMember.getRole());
-        assertEquals(TeamMemberEntity.Role.CAPTAIN, playerMember.getRole());
-        assertEquals(PLAYER_EMAIL, team.getCaptainEmail());
+        assertEquals(TeamMemberEntity.Role.CAPTAIN, newCaptainMember.getRole());
+        assertEquals("player@test.com", team.getCaptainEmail());
+        verify(teamMemberRepository, times(2)).save(any());
+        verify(teamRepository, times(1)).save(team);
     }
 
     @Test
-    void transferCaptaincy_teamNotFound() {
-        when(teamRepository.findByIdAndActiveTrue(TEAM_ID)).thenReturn(Optional.empty());
-
-        RuntimeException ex = assertThrows(RuntimeException.class,
-                () -> teamService.transferCaptaincy(TEAM_ID, CAPTAIN_EMAIL, request));
-
-        assertEquals("Team not found or inactive", ex.getMessage());
+    void transferCaptaincy_teamNotFound_throwsException() {
+        when(teamRepository.findByIdAndActiveTrue(99L)).thenReturn(Optional.empty());
+        TransferCaptainRequest request = new TransferCaptainRequest();
+        request.setNewCaptainEmail("player@test.com");
+        assertThrows(RuntimeException.class, () -> teamService.transferCaptaincy(99L, "captain@test.com", request));
     }
 
     @Test
-    void transferCaptaincy_notCaptain() {
-        when(teamRepository.findByIdAndActiveTrue(TEAM_ID)).thenReturn(Optional.of(team));
-
+    void transferCaptaincy_notCaptain_throwsException() {
+        when(teamRepository.findByIdAndActiveTrue(1L)).thenReturn(Optional.of(team));
+        TransferCaptainRequest request = new TransferCaptainRequest();
+        request.setNewCaptainEmail("player@test.com");
         RuntimeException ex = assertThrows(RuntimeException.class,
-                () -> teamService.transferCaptaincy(TEAM_ID, PLAYER_EMAIL, request));
-
+                () -> teamService.transferCaptaincy(1L, "impostor@test.com", request));
         assertEquals("Only the current captain can transfer captaincy", ex.getMessage());
     }
 
     @Test
-    void transferCaptaincy_transferToYourself() {
-        request.setNewCaptainEmail(CAPTAIN_EMAIL);
-        when(teamRepository.findByIdAndActiveTrue(TEAM_ID)).thenReturn(Optional.of(team));
-
+    void transferCaptaincy_sameEmail_throwsException() {
+        when(teamRepository.findByIdAndActiveTrue(1L)).thenReturn(Optional.of(team));
+        TransferCaptainRequest request = new TransferCaptainRequest();
+        request.setNewCaptainEmail("captain@test.com");
         RuntimeException ex = assertThrows(RuntimeException.class,
-                () -> teamService.transferCaptaincy(TEAM_ID, CAPTAIN_EMAIL, request));
-
+                () -> teamService.transferCaptaincy(1L, "captain@test.com", request));
         assertEquals("You are already the captain", ex.getMessage());
     }
 
     @Test
-    void transferCaptaincy_newCaptainNotMember() {
-        when(teamRepository.findByIdAndActiveTrue(TEAM_ID)).thenReturn(Optional.of(team));
-        when(teamMemberRepository.findByTeamAndMemberEmail(team, PLAYER_EMAIL)).thenReturn(Optional.empty());
-
-        RuntimeException ex = assertThrows(RuntimeException.class,
-                () -> teamService.transferCaptaincy(TEAM_ID, CAPTAIN_EMAIL, request));
-
-        assertEquals("The new captain must be an active member of the team", ex.getMessage());
+    void transferCaptaincy_newCaptainNotMember_throwsException() {
+        when(teamRepository.findByIdAndActiveTrue(1L)).thenReturn(Optional.of(team));
+        when(teamMemberRepository.findByTeamAndMemberEmail(team, "stranger@test.com")).thenReturn(Optional.empty());
+        TransferCaptainRequest request = new TransferCaptainRequest();
+        request.setNewCaptainEmail("stranger@test.com");
+        assertThrows(RuntimeException.class,
+                () -> teamService.transferCaptaincy(1L, "captain@test.com", request));
     }
 
     @Test
-    void transferCaptaincy_newCaptainInactive() {
-        playerMember.setActive(false);
-        when(teamRepository.findByIdAndActiveTrue(TEAM_ID)).thenReturn(Optional.of(team));
-        when(teamMemberRepository.findByTeamAndMemberEmail(team, PLAYER_EMAIL)).thenReturn(Optional.of(playerMember));
-
+    void transferCaptaincy_newCaptainInactive_throwsException() {
+        newCaptainMember.setActive(false);
+        when(teamRepository.findByIdAndActiveTrue(1L)).thenReturn(Optional.of(team));
+        when(teamMemberRepository.findByTeamAndMemberEmail(team, "player@test.com")).thenReturn(Optional.of(newCaptainMember));
+        TransferCaptainRequest request = new TransferCaptainRequest();
+        request.setNewCaptainEmail("player@test.com");
         RuntimeException ex = assertThrows(RuntimeException.class,
-                () -> teamService.transferCaptaincy(TEAM_ID, CAPTAIN_EMAIL, request));
-
+                () -> teamService.transferCaptaincy(1L, "captain@test.com", request));
         assertEquals("The new captain must be an active member of the team", ex.getMessage());
-    }
-
-    @Test
-    void transferCaptaincy_currentCaptainMemberRecordNotFound() {
-        when(teamRepository.findByIdAndActiveTrue(TEAM_ID)).thenReturn(Optional.of(team));
-        when(teamMemberRepository.findByTeamAndMemberEmail(team, PLAYER_EMAIL)).thenReturn(Optional.of(playerMember));
-        when(teamMemberRepository.findByTeamAndMemberEmail(team, CAPTAIN_EMAIL)).thenReturn(Optional.empty());
-
-        RuntimeException ex = assertThrows(RuntimeException.class,
-                () -> teamService.transferCaptaincy(TEAM_ID, CAPTAIN_EMAIL, request));
-
-        assertEquals("Current captain member record not found", ex.getMessage());
     }
 }

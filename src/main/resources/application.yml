@@ -1,4 +1,4 @@
-# Base configuration for cc-teams-service.
+﻿# Base configuration for cc-teams-service.
 # Manages team creation, membership, captaincy and invitations.
 # JWT secret must match the one used by cc-identity-service.
 
@@ -15,3 +15,21 @@ server:
 app:
   jwt:
     secret: ${JWT_SECRET:super-secret-key-that-is-at-least-256-bits-long-for-hs256}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+  info:
+    env:
+      enabled: true
+
+info:
+  app:
+    name: cc-teams-service
+    description: Microservicio de equipos para TechCup 2026
+    version: 0.0.1-SNAPSHOT

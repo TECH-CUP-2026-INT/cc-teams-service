@@ -5,15 +5,15 @@ import co.edu.escuelaing.techcup.teams.dto.TransferCaptainRequest;
 import co.edu.escuelaing.techcup.teams.service.JwtService;
 import co.edu.escuelaing.techcup.teams.service.TeamService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.http.MediaType;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -23,7 +23,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -46,17 +45,10 @@ class TeamControllerTest {
         }
     }
 
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @MockBean
-    private JwtService jwtService;
-
-    @MockBean
-    private TeamService teamService;
+    @Autowired private MockMvc mockMvc;
+    @Autowired private ObjectMapper objectMapper;
+    @MockBean private JwtService jwtService;
+    @MockBean private TeamService teamService;
 
     @Test
     @WithMockUser(username = "captain@test.com")
@@ -79,7 +71,6 @@ class TeamControllerTest {
     @WithMockUser(username = "captain@test.com")
     void transferCaptaincy_invalidRequest_missingEmail() throws Exception {
         TransferCaptainRequest request = new TransferCaptainRequest();
-        // newCaptainEmail left blank intentionally
 
         mockMvc.perform(patch("/api/teams/1/captain")
                         .contentType(MediaType.APPLICATION_JSON)

@@ -1,4 +1,13 @@
-﻿spring:
+﻿# ── Test profile — teams-service ─────────────────────────────────────────────
+# Flapdoodle (MongoDB embebido) se activa automáticamente con scope test.
+# No se necesita MongoDB real instalado para correr las pruebas ni en CI.
+spring:
   data:
     mongodb:
       uri: mongodb://localhost:27017/teams_test_db
+
+# Flapdoodle overrides the URI automatically — no manual config needed.
+# Just add de.flapdoodle.embed.mongo.spring3x to pom.xml test scope.
+
+server:
+  port: 0

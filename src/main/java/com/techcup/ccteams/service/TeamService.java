@@ -14,8 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,8 +26,7 @@ public class TeamService {
     private final TeamRepository teamRepository;
     private final PlayerProfileRepository playerProfileRepository;
     
-    // SCRUM-30: Consultar plantilla del equipo
-    public TeamRosterResponse getTeamRoster(UUID teamId) {
+    public TeamRosterResponse getTeamRoster(String teamId) {
         log.info("Consultando plantilla del equipo: {}", teamId);
         
         Team team = teamRepository.findById(teamId)
@@ -38,7 +37,7 @@ public class TeamService {
         List<PlayerCardDto> playerCards = players.stream()
                 .map(p -> new PlayerCardDto(
                     p.getUserId(),
-                    "Jugador " + p.getUserId().toString().substring(0, 8),
+                    "Jugador " + p.getUserId().substring(0, Math.min(8, p.getUserId().length())),
                     p.getPhotoUrl() != null ? p.getPhotoUrl() : "",
                     p.getPosition() != null ? p.getPosition() : "",
                     p.getShirtNumber() != null ? p.getShirtNumber() : 0,
@@ -56,20 +55,17 @@ public class TeamService {
         );
     }
     
-    // SCRUM-27: Actualizar equipo
     @Transactional
-    public TeamUpdateResponse updateTeam(UUID teamId, UUID captainId, TeamUpdateRequest request) {
+    public TeamUpdateResponse updateTeam(String teamId, String captainId, TeamUpdateRequest request) {
         log.info("Actualizando equipo: {} por capitán: {}", teamId, captainId);
         
         Team team = teamRepository.findById(teamId)
                 .orElseThrow(() -> new BusinessException("Equipo no encontrado"));
         
-        // Validar que el usuario sea el capitán del equipo
         if (team.getCaptainId() == null || !team.getCaptainId().equals(captainId)) {
             throw new BusinessException("Solo el capitán puede actualizar el equipo");
         }
         
-        // Validar que el nombre sea único
         if (request.getName() != null && !request.getName().equals(team.getName())) {
             if (teamRepository.existsByName(request.getName())) {
                 throw new BusinessException("Ya existe un equipo con ese nombre");
@@ -85,6 +81,7 @@ public class TeamService {
             team.setColors(request.getColors());
         }
         
+        team.setUpdatedAt(LocalDateTime.now());
         Team updated = teamRepository.save(team);
         log.info("Equipo actualizado: {}", updated.getId());
         

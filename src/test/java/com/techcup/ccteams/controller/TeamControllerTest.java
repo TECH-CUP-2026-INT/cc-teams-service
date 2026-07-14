@@ -15,7 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.util.Arrays;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -30,19 +29,19 @@ class TeamControllerTest {
     @InjectMocks
     private TeamController teamController;
 
-    private UUID teamId;
-    private UUID captainId;
+    private String teamId;
+    private String captainId;
     private TeamRosterResponse rosterResponse;
     private TeamUpdateResponse updateResponse;
     private TeamUpdateRequest updateRequest;
 
     @BeforeEach
     void setUp() {
-        teamId = UUID.randomUUID();
-        captainId = UUID.randomUUID();
+        teamId = "team-123";
+        captainId = "captain-456";
 
         PlayerCardDto player1 = new PlayerCardDto(
-            UUID.randomUUID(),
+            "player-789",
             "Jugador 1",
             "https://example.com/player1.jpg",
             "Forward",
@@ -51,7 +50,7 @@ class TeamControllerTest {
         );
         
         PlayerCardDto player2 = new PlayerCardDto(
-            UUID.randomUUID(),
+            "player-101",
             "Jugador 2",
             "https://example.com/player2.jpg",
             "Goalkeeper",
@@ -96,7 +95,7 @@ class TeamControllerTest {
 
     @Test
     void updateTeam_ShouldReturnOk_WhenValidRequest() {
-        when(teamService.updateTeam(any(UUID.class), any(UUID.class), any(TeamUpdateRequest.class)))
+        when(teamService.updateTeam(any(String.class), any(String.class), any(TeamUpdateRequest.class)))
                 .thenReturn(updateResponse);
 
         ResponseEntity<TeamUpdateResponse> result = teamController.updateTeam(teamId, captainId, updateRequest);
@@ -104,6 +103,6 @@ class TeamControllerTest {
         assertNotNull(result);
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(updateResponse, result.getBody());
-        verify(teamService, times(1)).updateTeam(any(UUID.class), any(UUID.class), any(TeamUpdateRequest.class));
+        verify(teamService, times(1)).updateTeam(any(String.class), any(String.class), any(TeamUpdateRequest.class));
     }
 }

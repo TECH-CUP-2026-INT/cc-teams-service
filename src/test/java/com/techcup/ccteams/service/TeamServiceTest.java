@@ -18,7 +18,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -36,20 +35,20 @@ class TeamServiceTest {
     @InjectMocks
     private TeamService teamService;
 
-    private UUID teamId;
-    private UUID captainId;
-    private UUID playerId1;
-    private UUID playerId2;
+    private String teamId;
+    private String captainId;
+    private String playerId1;
+    private String playerId2;
     private Team team;
     private PlayerProfile player1;
     private PlayerProfile player2;
 
     @BeforeEach
     void setUp() {
-        teamId = UUID.randomUUID();
-        captainId = UUID.randomUUID();
-        playerId1 = UUID.randomUUID();
-        playerId2 = UUID.randomUUID();
+        teamId = "team-123";
+        captainId = "captain-456";
+        playerId1 = "player-789";
+        playerId2 = "player-101";
 
         team = new Team();
         team.setId(teamId);
@@ -59,7 +58,7 @@ class TeamServiceTest {
         team.setCaptainId(captainId);
 
         player1 = new PlayerProfile();
-        player1.setId(UUID.randomUUID());
+        player1.setId("p1");
         player1.setUserId(playerId1);
         player1.setTeamId(teamId);
         player1.setShirtNumber(10);
@@ -69,7 +68,7 @@ class TeamServiceTest {
         player1.setIsActive(true);
 
         player2 = new PlayerProfile();
-        player2.setId(UUID.randomUUID());
+        player2.setId("p2");
         player2.setUserId(playerId2);
         player2.setTeamId(teamId);
         player2.setShirtNumber(1);
@@ -143,7 +142,7 @@ class TeamServiceTest {
     void updateTeam_ShouldThrowException_WhenUserIsNotCaptain() {
         TeamUpdateRequest request = new TeamUpdateRequest();
         request.setName("Los Tigres");
-        UUID wrongCaptainId = UUID.randomUUID();
+        String wrongCaptainId = "wrong-captain";
 
         when(teamRepository.findById(teamId)).thenReturn(Optional.of(team));
 
@@ -177,7 +176,7 @@ class TeamServiceTest {
         TeamUpdateResponse response = teamService.updateTeam(teamId, captainId, request);
 
         assertNotNull(response);
-        assertEquals("Los Pumas", response.getName()); // Nombre no cambia
+        assertEquals("Los Pumas", response.getName());
         assertEquals("https://example.com/new-logo.png", response.getLogoUrl());
         assertEquals("#0000FF", response.getColors());
         verify(teamRepository, never()).existsByName(anyString());

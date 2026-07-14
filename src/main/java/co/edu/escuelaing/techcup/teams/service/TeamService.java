@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Business logic for team operations.
  * Covers SCRUM-22: captaincy transfer.
+ * Covers SCRUM-61: disable team member.
  */
 @Service
 public class TeamService {
@@ -78,5 +79,48 @@ public class TeamService {
         teamRepository.save(team);
 
         return new ApiResponse("Captaincy successfully transferred to " + request.getNewCaptainEmail(), true);
+    }
+
+    /**
+     * Disables a team member, preventing them from participating (SCRUM-61).
+     * Only the captain can perform this action.
+     *
+     * @param teamId       the team ID
+     * @param captainEmail email of the requesting captain (from JWT)
+     * @param targetEmail  email of the member to disable
+     * @return confirmation message
+     */
+    @Transactional
+    public ApiResponse disableMember(Long teamId, String captainEmail, String targetEmail) {
+
+        // 1. Verify team exists and is active
+        TeamEntity team = teamRepository.findByIdAndActiveTrue(teamId)
+                .orElseThrow(() -> new RuntimeException("Team not found or inactive"));
+
+        // 2. Verify the requester is the captain
+        if (!team.getCaptainEmail().equals(captainEmail)) {
+            throw new RuntimeException("Only the captain can disable team members");
+        }
+
+        // 3. Cannot disable yourself
+        if (captainEmail.equals(targetEmail)) {
+            throw new RuntimeException("The captain cannot disable themselves");
+        }
+
+        // 4. Verify target is a member of the team
+        TeamMemberEntity target = teamMemberRepository
+                .findByTeamAndMemberEmail(team, targetEmail)
+                .orElseThrow(() -> new RuntimeException("Member not found in this team"));
+
+        // 5. Verify target is currently active
+        if (!target.isActive()) {
+            throw new RuntimeException("Member is already inactive");
+        }
+
+        // 6. Disable the member
+        target.setActive(false);
+        teamMemberRepository.save(target);
+
+        return new ApiResponse("Member " + targetEmail + " has been disabled", true);
     }
 }

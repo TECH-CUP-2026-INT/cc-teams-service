@@ -43,4 +43,23 @@ public class TeamController {
         ApiResponse response = teamService.transferCaptaincy(teamId, currentCaptainEmail, request);
         return ResponseEntity.ok(response);
     }
+
+    /**
+     * Disables a team member (SCRUM-61).
+     * Only the captain can perform this action.
+     *
+     * PATCH /api/teams/{teamId}/members/{memberEmail}/disable
+     */
+    @PatchMapping("/{teamId}/members/{memberEmail}/disable")
+    @Operation(summary = "Disable team member",
+               description = "The captain disables an active member, preventing further participation")
+    public ResponseEntity<ApiResponse> disableMember(
+            @PathVariable Long teamId,
+            @PathVariable String memberEmail,
+            Authentication authentication) {
+
+        String captainEmail = authentication.getName();
+        ApiResponse response = teamService.disableMember(teamId, captainEmail, memberEmail);
+        return ResponseEntity.ok(response);
+    }
 }

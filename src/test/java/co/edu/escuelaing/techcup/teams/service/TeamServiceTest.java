@@ -120,4 +120,63 @@ class TeamServiceTest {
                 () -> teamService.transferCaptaincy(1L, "captain@test.com", request));
         assertEquals("The new captain must be an active member of the team", ex.getMessage());
     }
+
+    // ── SCRUM-61: disableMember ──────────────────────────────────────────────
+
+    @Test
+    void disableMember_success() {
+        when(teamRepository.findByIdAndActiveTrue(1L)).thenReturn(Optional.of(team));
+        when(teamMemberRepository.findByTeamAndMemberEmail(team, "player@test.com"))
+                .thenReturn(Optional.of(newCaptainMember));
+
+        ApiResponse response = teamService.disableMember(1L, "captain@test.com", "player@test.com");
+
+        assertTrue(response.isSuccess());
+        assertFalse(newCaptainMember.isActive());
+        verify(teamMemberRepository, times(1)).save(newCaptainMember);
+    }
+
+    @Test
+    void disableMember_teamNotFound_throwsException() {
+        when(teamRepository.findByIdAndActiveTrue(99L)).thenReturn(Optional.empty());
+        assertThrows(RuntimeException.class,
+                () -> teamService.disableMember(99L, "captain@test.com", "player@test.com"));
+    }
+
+    @Test
+    void disableMember_notCaptain_throwsException() {
+        when(teamRepository.findByIdAndActiveTrue(1L)).thenReturn(Optional.of(team));
+        RuntimeException ex = assertThrows(RuntimeException.class,
+                () -> teamService.disableMember(1L, "impostor@test.com", "player@test.com"));
+        assertEquals("Only the captain can disable team members", ex.getMessage());
+    }
+
+    @Test
+    void disableMember_selfDisable_throwsException() {
+        when(teamRepository.findByIdAndActiveTrue(1L)).thenReturn(Optional.of(team));
+        RuntimeException ex = assertThrows(RuntimeException.class,
+                () -> teamService.disableMember(1L, "captain@test.com", "captain@test.com"));
+        assertEquals("The captain cannot disable themselves", ex.getMessage());
+    }
+
+    @Test
+    void disableMember_memberNotFound_throwsException() {
+        when(teamRepository.findByIdAndActiveTrue(1L)).thenReturn(Optional.of(team));
+        when(teamMemberRepository.findByTeamAndMemberEmail(team, "unknown@test.com"))
+                .thenReturn(Optional.empty());
+        RuntimeException ex = assertThrows(RuntimeException.class,
+                () -> teamService.disableMember(1L, "captain@test.com", "unknown@test.com"));
+        assertEquals("Member not found in this team", ex.getMessage());
+    }
+
+    @Test
+    void disableMember_alreadyInactive_throwsException() {
+        newCaptainMember.setActive(false);
+        when(teamRepository.findByIdAndActiveTrue(1L)).thenReturn(Optional.of(team));
+        when(teamMemberRepository.findByTeamAndMemberEmail(team, "player@test.com"))
+                .thenReturn(Optional.of(newCaptainMember));
+        RuntimeException ex = assertThrows(RuntimeException.class,
+                () -> teamService.disableMember(1L, "captain@test.com", "player@test.com"));
+        assertEquals("Member is already inactive", ex.getMessage());
+    }
 }

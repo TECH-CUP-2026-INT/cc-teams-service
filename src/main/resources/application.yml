@@ -1,6 +1,7 @@
-﻿spring:
+﻿server:
+  port: 8082
+  address: 0.0.0.0
+spring:
   data:
     mongodb:
-      uri: mongodb://localhost:27018/teams_db
-server:
-  port: 8082
+      uri: mongodb://host.docker.internal:27018/teams_db

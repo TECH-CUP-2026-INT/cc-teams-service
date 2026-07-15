@@ -1,16 +1,17 @@
 package co.edu.escuelaing.techcup.teams.entity;
 
-import jakarta.persistence.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.time.LocalDateTime;
 
 /**
  * Represents the membership of a user in a team.
- * Stores the user's email (from cc-identity-service), the team they belong to,
+ * Stores the user's email (from cc-identity-service), the team ID they belong to,
  * and their role within the team (CAPTAIN or PLAYER).
  */
-@Entity
-@Table(name = "team_members",
-       uniqueConstraints = @UniqueConstraint(columnNames = {"team_id", "member_email"}))
+@Document(collection = "team_members")
 public class TeamMemberEntity {
 
     public enum Role {
@@ -19,63 +20,51 @@ public class TeamMemberEntity {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "team_id", nullable = false)
-    private TeamEntity team;
+    private String teamId;
 
-    @Column(name = "member_email", nullable = false)
     private String memberEmail;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private Role role;
 
-    @Column(nullable = false)
     private boolean active;
 
-    @Column(nullable = false, updatable = false)
+    @CreatedDate
     private LocalDateTime joinedAt;
-
-    @PrePersist
-    protected void onCreate() {
-        this.joinedAt = LocalDateTime.now();
-        this.active = true;
-    }
 
     // Builder
     public static Builder builder() { return new Builder(); }
 
     public static class Builder {
-        private TeamEntity team;
+        private String teamId;
         private String memberEmail;
         private Role role;
 
-        public Builder team(TeamEntity team) { this.team = team; return this; }
+        public Builder teamId(String teamId) { this.teamId = teamId; return this; }
         public Builder memberEmail(String memberEmail) { this.memberEmail = memberEmail; return this; }
         public Builder role(Role role) { this.role = role; return this; }
 
         public TeamMemberEntity build() {
             TeamMemberEntity e = new TeamMemberEntity();
-            e.team = this.team;
+            e.teamId = this.teamId;
             e.memberEmail = this.memberEmail;
             e.role = this.role;
+            e.active = true;
             return e;
         }
     }
 
     // Getters and setters
-    public Long getId() { return id; }
-    public TeamEntity getTeam() { return team; }
+    public String getId() { return id; }
+    public String getTeamId() { return teamId; }
     public String getMemberEmail() { return memberEmail; }
     public Role getRole() { return role; }
     public boolean isActive() { return active; }
     public LocalDateTime getJoinedAt() { return joinedAt; }
 
-    public void setId(Long id) { this.id = id; }
-    public void setTeam(TeamEntity team) { this.team = team; }
+    public void setId(String id) { this.id = id; }
+    public void setTeamId(String teamId) { this.teamId = teamId; }
     public void setMemberEmail(String memberEmail) { this.memberEmail = memberEmail; }
     public void setRole(Role role) { this.role = role; }
     public void setActive(boolean active) { this.active = active; }

@@ -56,7 +56,7 @@ class TeamControllerTest {
         TransferCaptainRequest request = new TransferCaptainRequest();
         request.setNewCaptainEmail("player@test.com");
 
-        when(teamService.transferCaptaincy(eq(1L), eq("captain@test.com"), any()))
+        when(teamService.transferCaptaincy(eq("1"), eq("captain@test.com"), any()))
                 .thenReturn(new ApiResponse("Captaincy successfully transferred to player@test.com", true));
 
         mockMvc.perform(patch("/api/teams/1/captain")
@@ -87,5 +87,37 @@ class TeamControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isUnauthorized());
+    }
+
+    // ── SCRUM-61: disableMember ──────────────────────────────────────────────
+
+    @Test
+    @WithMockUser(username = "captain@test.com")
+    void disableMember_success() throws Exception {
+        when(teamService.disableMember(eq("1"), eq("captain@test.com"), eq("player@test.com")))
+                .thenReturn(new ApiResponse("Member player@test.com has been disabled", true));
+
+        mockMvc.perform(patch("/api/teams/1/members/player@test.com/disable"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.message").value("Member player@test.com has been disabled"));
+    }
+
+    @Test
+    void disableMember_unauthenticated() throws Exception {
+        mockMvc.perform(patch("/api/teams/1/members/player@test.com/disable"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser(username = "impostor@test.com")
+    void disableMember_notCaptain_returnsBadRequest() throws Exception {
+        when(teamService.disableMember(eq("1"), eq("impostor@test.com"), eq("player@test.com")))
+                .thenThrow(new RuntimeException("Only the captain can disable team members"));
+
+        mockMvc.perform(patch("/api/teams/1/members/player@test.com/disable"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.message").value("Only the captain can disable team members"));
     }
 }

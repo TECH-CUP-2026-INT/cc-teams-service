@@ -4,6 +4,11 @@ import co.edu.escuelaing.techcup.teams.dto.ApiResponse;
 import co.edu.escuelaing.techcup.teams.dto.TransferCaptainRequest;
 import co.edu.escuelaing.techcup.teams.service.TeamService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -32,10 +37,28 @@ public class TeamController {
      * PATCH /api/teams/{teamId}/captain
      */
     @PatchMapping("/{teamId}/captain")
-    @Operation(summary = "Transfer captaincy",
-               description = "The current captain delegates captaincy to another active team member")
+    @Operation(
+        summary = "Transfer captaincy (SCRUM-22)",
+        description = "The authenticated captain delegates captaincy to another active team member. The caller must be the current captain.",
+        security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @ApiResponses({
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "200", description = "Captaincy transferred successfully",
+            content = @Content(schema = @Schema(implementation = ApiResponse.class))),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "400", description = "Invalid request body (missing or malformed email)",
+            content = @Content),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "401", description = "Missing or invalid JWT token",
+            content = @Content),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "500", description = "Business rule violation (not captain, member not found, etc.)",
+            content = @Content)
+    })
     public ResponseEntity<ApiResponse> transferCaptaincy(
-            @PathVariable Long teamId,
+            @Parameter(description = "MongoDB ID of the team", example = "665f1a2b3c4d5e6f7a8b9c0d")
+            @PathVariable String teamId,
             @Valid @RequestBody TransferCaptainRequest request,
             Authentication authentication) {
 
@@ -51,10 +74,26 @@ public class TeamController {
      * PATCH /api/teams/{teamId}/members/{memberEmail}/disable
      */
     @PatchMapping("/{teamId}/members/{memberEmail}/disable")
-    @Operation(summary = "Disable team member",
-               description = "The captain disables an active member, preventing further participation")
+    @Operation(
+        summary = "Disable team member (SCRUM-61)",
+        description = "The authenticated captain disables an active member, preventing further participation. The captain cannot disable themselves.",
+        security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @ApiResponses({
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "200", description = "Member disabled successfully",
+            content = @Content(schema = @Schema(implementation = ApiResponse.class))),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "401", description = "Missing or invalid JWT token",
+            content = @Content),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "500", description = "Business rule violation (not captain, self-disable, member not found, already inactive)",
+            content = @Content)
+    })
     public ResponseEntity<ApiResponse> disableMember(
-            @PathVariable Long teamId,
+            @Parameter(description = "MongoDB ID of the team", example = "665f1a2b3c4d5e6f7a8b9c0d")
+            @PathVariable String teamId,
+            @Parameter(description = "Email of the member to disable", example = "player@techcup.co")
             @PathVariable String memberEmail,
             Authentication authentication) {
 

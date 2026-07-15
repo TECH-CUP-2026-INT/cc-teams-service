@@ -7,7 +7,6 @@ import co.edu.escuelaing.techcup.teams.entity.TeamMemberEntity;
 import co.edu.escuelaing.techcup.teams.repository.TeamMemberRepository;
 import co.edu.escuelaing.techcup.teams.repository.TeamRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Business logic for team operations.
@@ -30,13 +29,12 @@ public class TeamService {
      * Transfers captaincy from the current captain to another team member.
      * Only the current captain can perform this action (SCRUM-22).
      *
-     * @param teamId          the team ID
+     * @param teamId              the team ID
      * @param currentCaptainEmail email of the user making the request (from JWT)
-     * @param request         contains the email of the new captain
+     * @param request             contains the email of the new captain
      * @return confirmation message
      */
-    @Transactional
-    public ApiResponse transferCaptaincy(Long teamId, String currentCaptainEmail,
+    public ApiResponse transferCaptaincy(String teamId, String currentCaptainEmail,
                                          TransferCaptainRequest request) {
 
         // 1. Verify team exists and is active
@@ -55,7 +53,7 @@ public class TeamService {
 
         // 4. Verify new captain is an active member of the team
         TeamMemberEntity newCaptainMember = teamMemberRepository
-                .findByTeamAndMemberEmail(team, request.getNewCaptainEmail())
+                .findByTeamIdAndMemberEmail(teamId, request.getNewCaptainEmail())
                 .orElseThrow(() -> new RuntimeException("The new captain must be an active member of the team"));
 
         if (!newCaptainMember.isActive()) {
@@ -64,7 +62,7 @@ public class TeamService {
 
         // 5. Demote current captain to PLAYER
         TeamMemberEntity currentCaptainMember = teamMemberRepository
-                .findByTeamAndMemberEmail(team, currentCaptainEmail)
+                .findByTeamIdAndMemberEmail(teamId, currentCaptainEmail)
                 .orElseThrow(() -> new RuntimeException("Current captain member record not found"));
 
         currentCaptainMember.setRole(TeamMemberEntity.Role.PLAYER);
@@ -90,8 +88,7 @@ public class TeamService {
      * @param targetEmail  email of the member to disable
      * @return confirmation message
      */
-    @Transactional
-    public ApiResponse disableMember(Long teamId, String captainEmail, String targetEmail) {
+    public ApiResponse disableMember(String teamId, String captainEmail, String targetEmail) {
 
         // 1. Verify team exists and is active
         TeamEntity team = teamRepository.findByIdAndActiveTrue(teamId)
@@ -109,7 +106,7 @@ public class TeamService {
 
         // 4. Verify target is a member of the team
         TeamMemberEntity target = teamMemberRepository
-                .findByTeamAndMemberEmail(team, targetEmail)
+                .findByTeamIdAndMemberEmail(teamId, targetEmail)
                 .orElseThrow(() -> new RuntimeException("Member not found in this team"));
 
         // 5. Verify target is currently active

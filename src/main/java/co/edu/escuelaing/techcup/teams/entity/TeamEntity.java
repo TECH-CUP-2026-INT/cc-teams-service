@@ -1,49 +1,37 @@
 package co.edu.escuelaing.techcup.teams.entity;
 
-import jakarta.persistence.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.time.LocalDateTime;
 
 /**
  * Represents a team in the TechCup platform.
  * A team is created by a Captain and can participate in tournaments.
  */
-@Entity
-@Table(name = "teams")
+@Document(collection = "teams")
 public class TeamEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
-    @Column(nullable = false, unique = true)
+    @Indexed(unique = true)
     private String name;
 
-    @Column
     private String logoUrl;
 
-    @Column(nullable = false)
     private String captainEmail;
 
-    @Column(nullable = false)
     private boolean active;
 
-    @Column(nullable = false, updatable = false)
+    @CreatedDate
     private LocalDateTime createdAt;
 
-    @Column(nullable = false)
+    @LastModifiedDate
     private LocalDateTime updatedAt;
-
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
-        this.active = true;
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
-    }
 
     // Builder
     public static Builder builder() { return new Builder(); }
@@ -62,12 +50,13 @@ public class TeamEntity {
             e.name = this.name;
             e.logoUrl = this.logoUrl;
             e.captainEmail = this.captainEmail;
+            e.active = true;
             return e;
         }
     }
 
     // Getters and setters
-    public Long getId() { return id; }
+    public String getId() { return id; }
     public String getName() { return name; }
     public String getLogoUrl() { return logoUrl; }
     public String getCaptainEmail() { return captainEmail; }
@@ -75,7 +64,7 @@ public class TeamEntity {
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
 
-    public void setId(Long id) { this.id = id; }
+    public void setId(String id) { this.id = id; }
     public void setName(String name) { this.name = name; }
     public void setLogoUrl(String logoUrl) { this.logoUrl = logoUrl; }
     public void setCaptainEmail(String captainEmail) { this.captainEmail = captainEmail; }

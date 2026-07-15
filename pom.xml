@@ -90,8 +90,8 @@
 			<version>4.18.0</version>
 			<scope>test</scope>
 		</dependency>
-        
-        <!-- Actuator — SCRUM-63: Consultar eventos del servicio -->
+
+		<!-- Actuator — SCRUM-63: Consultar eventos del servicio -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
@@ -100,7 +100,6 @@
 			<groupId>io.micrometer</groupId>
 			<artifactId>micrometer-registry-prometheus</artifactId>
 		</dependency>
-
 	</dependencies>
 
 	<build>
@@ -166,5 +165,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
 </project>

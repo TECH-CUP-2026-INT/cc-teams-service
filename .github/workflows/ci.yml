@@ -42,6 +42,7 @@ jobs:
           JWT_SECRET: ci-test-secret-key-for-github-actions-pipeline-2026!
         with:
           args: >
+            -Dsonar.host.url=https://sonarcloud.io
             -Dsonar.organization=tech-cup-2026-int
             -Dsonar.projectKey=TECH-CUP-2026-INT_cc-teams-service
             -Dsonar.projectName=cc-teams-service

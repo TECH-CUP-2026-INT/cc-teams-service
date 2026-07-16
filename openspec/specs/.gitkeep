@@ -1,0 +1,3 @@
+# openspec/specs/ (source of truth - main specs)
+# This directory is the home for domain spec.md files. It starts empty; delta
+# specs from changes are merged here by sdd-archive.

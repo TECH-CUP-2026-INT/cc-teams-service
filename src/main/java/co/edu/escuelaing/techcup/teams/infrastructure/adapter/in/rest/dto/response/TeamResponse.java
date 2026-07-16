@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @Builder
@@ -15,8 +16,8 @@ import java.time.LocalDateTime;
 @Schema(description = "Datos de un equipo")
 public class TeamResponse {
 
-    @Schema(description = "ID único del equipo", example = "team-abc123")
-    private String id;
+    @Schema(description = "ID único del equipo", example = "550e8400-e29b-41d4-a716-446655440000")
+    private UUID id;
 
     @Schema(description = "Nombre del equipo", example = "Los Halcones FC")
     private String name;
@@ -24,8 +25,8 @@ public class TeamResponse {
     @Schema(description = "Colores del equipo", example = "#FF0000,#FFFFFF")
     private String colors;
 
-    @Schema(description = "ID del capitán", example = "user-123")
-    private String captainId;
+    @Schema(description = "ID del capitán", example = "550e8400-e29b-41d4-a716-446655440000")
+    private UUID captainId;
 
     @Schema(description = "Cantidad de miembros del equipo", example = "5")
     private int memberCount;

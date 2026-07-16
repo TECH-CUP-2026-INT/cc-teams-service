@@ -5,7 +5,6 @@ import co.edu.escuelaing.techcup.teams.domain.port.in.CreateTeamUseCase;
 import co.edu.escuelaing.techcup.teams.infrastructure.adapter.in.rest.dto.request.CreateTeamRequest;
 import co.edu.escuelaing.techcup.teams.infrastructure.adapter.in.rest.dto.response.TeamResponse;
 import co.edu.escuelaing.techcup.teams.infrastructure.mapper.TeamMapper;
-import co.edu.escuelaing.techcup.teams.shared.util.JwtUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -23,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/teams")
@@ -32,7 +32,6 @@ public class TeamController {
 
     private final CreateTeamUseCase createTeamUseCase;
     private final TeamMapper teamMapper;
-    private final JwtUtil jwtUtil;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "Crear equipo", description = "Permite al Capitán crear un nuevo equipo con nombre, logo y colores. El nombre debe ser único en la plataforma.")
@@ -47,13 +46,11 @@ public class TeamController {
             @RequestPart("logo") MultipartFile logo,
             Authentication authentication) throws IOException {
 
-        String token = (String) authentication.getCredentials();
-        String captainId = (String) authentication.getPrincipal();
-        String captainName = jwtUtil.extractFullName(token);
+        UUID captainId = (UUID) authentication.getPrincipal();
 
         Team created = createTeamUseCase.createTeam(
                 captainId,
-                captainName != null ? captainName : "Captain",
+                request.getCaptainName(),
                 request.getName(),
                 logo.getBytes(),
                 logo.getContentType(),

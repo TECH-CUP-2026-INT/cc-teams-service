@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @Builder
@@ -16,20 +17,20 @@ import java.time.LocalDateTime;
 @Schema(description = "Datos de una invitación de equipo")
 public class TeamInvitationResponse {
 
-    @Schema(description = "ID de la invitación", example = "inv-abc123")
-    private String id;
+    @Schema(description = "ID de la invitación", example = "550e8400-e29b-41d4-a716-446655440000")
+    private UUID id;
 
-    @Schema(description = "ID del equipo", example = "team-abc123")
-    private String teamId;
+    @Schema(description = "ID del equipo", example = "550e8400-e29b-41d4-a716-446655440000")
+    private UUID teamId;
 
     @Schema(description = "Nombre del equipo", example = "Los Halcones FC")
     private String teamName;
 
-    @Schema(description = "ID del jugador invitado", example = "player-123")
-    private String invitedUserId;
+    @Schema(description = "ID del jugador invitado", example = "550e8400-e29b-41d4-a716-446655440000")
+    private UUID invitedUserId;
 
-    @Schema(description = "ID del capitán que envió la invitación", example = "captain-456")
-    private String invitedBy;
+    @Schema(description = "ID del capitán que envió la invitación", example = "550e8400-e29b-41d4-a716-446655440000")
+    private UUID invitedBy;
 
     @Schema(description = "Estado de la invitación", example = "PENDING")
     private InvitationStatus status;

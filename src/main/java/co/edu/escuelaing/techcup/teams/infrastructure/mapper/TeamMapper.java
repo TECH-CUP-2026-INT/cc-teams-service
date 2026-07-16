@@ -18,7 +18,6 @@ public interface TeamMapper {
     Team toDomain(TeamDocument document);
 
     @Mapping(target = "memberCount", expression = "java(team.getMembers() != null ? team.getMembers().size() : 0)")
-    @Mapping(target = "logo", ignore = true)
     TeamResponse toResponse(Team team);
 
     @Named("bytesToBinary")

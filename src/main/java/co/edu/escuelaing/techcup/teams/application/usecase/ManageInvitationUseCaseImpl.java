@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -35,7 +36,7 @@ public class ManageInvitationUseCaseImpl implements ManageInvitationUseCase {
     private final NotificationPort notificationPort;
 
     @Override
-    public TeamInvitation sendInvitation(String captainId, String teamId, String invitedUserId) {
+    public TeamInvitation sendInvitation(UUID captainId, UUID teamId, UUID invitedUserId) {
         Team team = teamRepository.findById(teamId)
                 .orElseThrow(() -> new TeamNotFoundException(teamId));
 
@@ -84,7 +85,7 @@ public class ManageInvitationUseCaseImpl implements ManageInvitationUseCase {
     }
 
     @Override
-    public TeamInvitation respondToInvitation(String userId, String userName, String invitationId, boolean accept) {
+    public TeamInvitation respondToInvitation(UUID userId, String userName, UUID invitationId, boolean accept) {
         TeamInvitation invitation = invitationRepository.findById(invitationId)
                 .orElseThrow(() -> new InvitationNotFoundException(invitationId));
 
@@ -149,12 +150,12 @@ public class ManageInvitationUseCaseImpl implements ManageInvitationUseCase {
     }
 
     @Override
-    public List<TeamInvitation> getInvitationsForUser(String userId) {
+    public List<TeamInvitation> getInvitationsForUser(UUID userId) {
         return invitationRepository.findByInvitedUserId(userId);
     }
 
     @Override
-    public List<TeamInvitation> getInvitationsForTeam(String captainId, String teamId) {
+    public List<TeamInvitation> getInvitationsForTeam(UUID captainId, UUID teamId) {
         Team team = teamRepository.findById(teamId)
                 .orElseThrow(() -> new TeamNotFoundException(teamId));
 

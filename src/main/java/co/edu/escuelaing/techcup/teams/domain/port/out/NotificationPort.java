@@ -1,16 +1,18 @@
 package co.edu.escuelaing.techcup.teams.domain.port.out;
 
+import java.util.UUID;
+
 public interface NotificationPort {
 
-    void publishTeamInvitation(String teamId, String teamName, String invitedUserId,
-                               String invitationId, String invitedBy);
+    void publishTeamInvitation(UUID teamId, String teamName, UUID invitedUserId,
+                               UUID invitationId, UUID invitedBy);
 
-    void publishCaptaincyTransfer(String teamId, String teamName,
-                                  String currentCaptainId, String newCaptainId, String initiatedBy);
+    void publishCaptaincyTransfer(UUID teamId, String teamName,
+                                  UUID currentCaptainId, UUID newCaptainId, String initiatedBy);
 
-    void publishTeamLinkRequest(String teamId, String teamName, String requesterId,
-                                String requesterName, String recipientId, String requestId);
+    void publishTeamLinkRequest(UUID teamId, String teamName, UUID requesterId,
+                                String requesterName, UUID recipientId, UUID requestId);
 
-    void publishTeamLinkResponse(String teamId, String teamName, String requestId,
-                                 String recipientId, boolean accepted);
+    void publishTeamLinkResponse(UUID teamId, String teamName, UUID requestId,
+                                 UUID recipientId, boolean accepted);
 }

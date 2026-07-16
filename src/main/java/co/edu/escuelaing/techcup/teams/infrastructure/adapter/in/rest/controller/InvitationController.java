@@ -6,7 +6,6 @@ import co.edu.escuelaing.techcup.teams.infrastructure.adapter.in.rest.dto.reques
 import co.edu.escuelaing.techcup.teams.infrastructure.adapter.in.rest.dto.request.SendInvitationRequest;
 import co.edu.escuelaing.techcup.teams.infrastructure.adapter.in.rest.dto.response.TeamInvitationResponse;
 import co.edu.escuelaing.techcup.teams.infrastructure.mapper.TeamInvitationMapper;
-import co.edu.escuelaing.techcup.teams.shared.util.JwtUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -25,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/invitations")
@@ -34,7 +34,6 @@ public class InvitationController {
 
     private final ManageInvitationUseCase manageInvitationUseCase;
     private final TeamInvitationMapper invitationMapper;
-    private final JwtUtil jwtUtil;
 
     @PostMapping("/teams/{teamId}")
     @Operation(summary = "Enviar invitación", description = "El Capitán envía una invitación a un jugador para unirse al equipo.")
@@ -45,11 +44,11 @@ public class InvitationController {
             @ApiResponse(responseCode = "409", description = "Jugador ya es miembro o equipo lleno")
     })
     public ResponseEntity<TeamInvitationResponse> sendInvitation(
-            @PathVariable String teamId,
+            @PathVariable UUID teamId,
             @RequestBody @Valid SendInvitationRequest request,
             Authentication authentication) {
 
-        String captainId = (String) authentication.getPrincipal();
+        UUID captainId = (UUID) authentication.getPrincipal();
 
         TeamInvitation invitation = manageInvitationUseCase.sendInvitation(
                 captainId, teamId, request.getInvitedUserId());
@@ -66,13 +65,12 @@ public class InvitationController {
             @ApiResponse(responseCode = "404", description = "Invitación no encontrada")
     })
     public ResponseEntity<TeamInvitationResponse> respondToInvitation(
-            @PathVariable String invitationId,
+            @PathVariable UUID invitationId,
             @RequestBody @Valid InvitationResponseRequest request,
             Authentication authentication) {
 
-        String userId = (String) authentication.getPrincipal();
-        String token = (String) authentication.getCredentials();
-        String userName = jwtUtil.extractFullName(token);
+        UUID userId = (UUID) authentication.getPrincipal();
+        String userName = request.getUserName();
 
         TeamInvitation invitation = manageInvitationUseCase.respondToInvitation(
                 userId, userName != null ? userName : "Player", invitationId, request.getAccept());
@@ -86,7 +84,7 @@ public class InvitationController {
             @ApiResponse(responseCode = "200", description = "Lista de invitaciones")
     })
     public ResponseEntity<List<TeamInvitationResponse>> getMyInvitations(Authentication authentication) {
-        String userId = (String) authentication.getPrincipal();
+        UUID userId = (UUID) authentication.getPrincipal();
 
         List<TeamInvitationResponse> responses = manageInvitationUseCase.getInvitationsForUser(userId).stream()
                 .map(invitationMapper::toResponse)
@@ -103,10 +101,10 @@ public class InvitationController {
             @ApiResponse(responseCode = "404", description = "Equipo no encontrado")
     })
     public ResponseEntity<List<TeamInvitationResponse>> getTeamInvitations(
-            @PathVariable String teamId,
+            @PathVariable UUID teamId,
             Authentication authentication) {
 
-        String captainId = (String) authentication.getPrincipal();
+        UUID captainId = (UUID) authentication.getPrincipal();
 
         List<TeamInvitationResponse> responses = manageInvitationUseCase.getInvitationsForTeam(captainId, teamId).stream()
                 .map(invitationMapper::toResponse)

@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -32,7 +33,7 @@ public class TransferCaptaincyUseCaseImpl implements TransferCaptaincyUseCase {
     private final NotificationPort notificationPort;
 
     @Override
-    public CaptaincyTransferRequest initiateTransfer(String captainId, String teamId, String newCaptainId) {
+    public CaptaincyTransferRequest initiateTransfer(UUID captainId, UUID teamId, UUID newCaptainId) {
         Team team = teamRepository.findById(teamId)
                 .orElseThrow(() -> new TeamNotFoundException(teamId));
 
@@ -75,7 +76,7 @@ public class TransferCaptaincyUseCaseImpl implements TransferCaptaincyUseCase {
     }
 
     @Override
-    public CaptaincyTransferRequest applyForCaptaincy(String playerId, String playerName, String teamId) {
+    public CaptaincyTransferRequest applyForCaptaincy(UUID playerId, String playerName, UUID teamId) {
         Team team = teamRepository.findById(teamId)
                 .orElseThrow(() -> new TeamNotFoundException(teamId));
 
@@ -119,7 +120,7 @@ public class TransferCaptaincyUseCaseImpl implements TransferCaptaincyUseCase {
     }
 
     @Override
-    public CaptaincyTransferRequest respondToTransfer(String userId, String transferId, boolean accept) {
+    public CaptaincyTransferRequest respondToTransfer(UUID userId, UUID transferId, boolean accept) {
         CaptaincyTransferRequest transfer = transferRepository.findById(transferId)
                 .orElseThrow(() -> new TransferNotFoundException(transferId));
 
@@ -128,7 +129,7 @@ public class TransferCaptaincyUseCaseImpl implements TransferCaptaincyUseCase {
         }
 
         boolean isCaptainInitiated = "CAPTAIN".equals(transfer.getInitiatedBy());
-        String expectedRespondent = isCaptainInitiated ? transfer.getNewCaptainId() : transfer.getCurrentCaptainId();
+        UUID expectedRespondent = isCaptainInitiated ? transfer.getNewCaptainId() : transfer.getCurrentCaptainId();
 
         if (!expectedRespondent.equals(userId)) {
             throw new UnauthorizedTeamActionException("Only the designated respondent can respond to this transfer");
@@ -163,7 +164,7 @@ public class TransferCaptaincyUseCaseImpl implements TransferCaptaincyUseCase {
                     .build());
         }
 
-        String recipientId = isCaptainInitiated ? transfer.getCurrentCaptainId() : transfer.getNewCaptainId();
+        UUID recipientId = isCaptainInitiated ? transfer.getCurrentCaptainId() : transfer.getNewCaptainId();
         notificationPort.publishTeamLinkResponse(transfer.getTeamId(), transfer.getTeamName(),
                 transferId, recipientId, accept);
 
@@ -187,7 +188,7 @@ public class TransferCaptaincyUseCaseImpl implements TransferCaptaincyUseCase {
         teamRepository.save(team);
     }
 
-    private void validateNoPendingTransfer(String teamId) {
+    private void validateNoPendingTransfer(UUID teamId) {
         transferRepository.findByTeamIdAndStatus(teamId, TransferRequestStatus.PENDING)
                 .ifPresent(existing -> {
                     throw new InvalidTransferStateException("A pending captaincy transfer already exists for this team");

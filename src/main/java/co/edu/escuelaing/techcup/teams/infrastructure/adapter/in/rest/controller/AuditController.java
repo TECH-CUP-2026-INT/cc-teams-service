@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/audit")
@@ -48,7 +49,7 @@ public class AuditController {
             @Parameter(description = "Tipo de acción de auditoría")
             @RequestParam(required = false) AuditActionType actionType,
             @Parameter(description = "ID del equipo")
-            @RequestParam(required = false) String teamId) {
+            @RequestParam(required = false) UUID teamId) {
 
         if (startDate != null && endDate != null && startDate.isAfter(endDate)) {
             throw new DomainException("INVALID_DATE_RANGE", "startDate must be before or equal to endDate");

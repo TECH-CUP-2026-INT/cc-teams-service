@@ -14,17 +14,23 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public final class TestFixtures {
 
-    public static final String CAPTAIN_ID = "captain-1";
+    public static final UUID CAPTAIN_ID = UUID.fromString("11111111-1111-1111-1111-111111111111");
     public static final String CAPTAIN_NAME = "Ada Lovelace";
-    public static final String PLAYER_ID = "player-1";
+    public static final UUID PLAYER_ID = UUID.fromString("22222222-2222-2222-2222-222222222222");
     public static final String PLAYER_NAME = "Grace Hopper";
-    public static final String TEAM_ID = "team-1";
+    public static final UUID TEAM_ID = UUID.fromString("33333333-3333-3333-3333-333333333333");
     public static final String TEAM_NAME = "Los Halcones FC";
-    public static final String INVITATION_ID = "inv-1";
-    public static final String TRANSFER_ID = "transfer-1";
+    public static final UUID INVITATION_ID = UUID.fromString("44444444-4444-4444-4444-444444444444");
+    public static final UUID TRANSFER_ID = UUID.fromString("55555555-5555-5555-5555-555555555555");
+    public static final UUID NEW_PLAYER_ID = UUID.fromString("66666666-6666-6666-6666-666666666666");
+    public static final UUID OTHER_USER_ID = UUID.fromString("77777777-7777-7777-7777-777777777777");
+    public static final UUID NON_MEMBER_ID = UUID.fromString("88888888-8888-8888-8888-888888888888");
+    public static final UUID NONEXISTENT_TEAM_ID = UUID.fromString("99999999-9999-9999-9999-999999999999");
+    public static final UUID AUDIT_ID = UUID.fromString("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
 
     private TestFixtures() {
     }
@@ -79,7 +85,7 @@ public final class TestFixtures {
                 .id(INVITATION_ID)
                 .teamId(TEAM_ID)
                 .teamName(TEAM_NAME)
-                .invitedUserId("new-player-1")
+                .invitedUserId(NEW_PLAYER_ID)
                 .invitedBy(CAPTAIN_ID)
                 .status(InvitationStatus.PENDING)
                 .createdAt(LocalDateTime.now(ZoneOffset.UTC).minusHours(1))
@@ -101,7 +107,7 @@ public final class TestFixtures {
 
     public static AuditEvent auditEvent() {
         return AuditEvent.builder()
-                .id("audit-1")
+                .id(AUDIT_ID)
                 .teamId(TEAM_ID)
                 .userId(CAPTAIN_ID)
                 .actionType(AuditActionType.TEAM_CREATED)

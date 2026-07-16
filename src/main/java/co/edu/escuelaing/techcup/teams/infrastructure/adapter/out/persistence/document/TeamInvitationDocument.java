@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @Builder
@@ -19,15 +20,15 @@ import java.time.LocalDateTime;
 public class TeamInvitationDocument {
 
     @Id
-    private String id;
+    private UUID id;
 
     @Indexed
-    private String teamId;
+    private UUID teamId;
     private String teamName;
 
     @Indexed
-    private String invitedUserId;
-    private String invitedBy;
+    private UUID invitedUserId;
+    private UUID invitedBy;
     private InvitationStatus status;
     private LocalDateTime createdAt;
     private LocalDateTime respondedAt;

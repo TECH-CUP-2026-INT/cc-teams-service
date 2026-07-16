@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -20,32 +21,35 @@ public class TeamInvitationRepositoryAdapter implements TeamInvitationRepository
 
     @Override
     public TeamInvitation save(TeamInvitation invitation) {
+        if (invitation.getId() == null) {
+            invitation.setId(UUID.randomUUID());
+        }
         var document = mapper.toDocument(invitation);
         var saved = mongoRepository.save(document);
         return mapper.toDomain(saved);
     }
 
     @Override
-    public Optional<TeamInvitation> findById(String id) {
+    public Optional<TeamInvitation> findById(UUID id) {
         return mongoRepository.findById(id).map(mapper::toDomain);
     }
 
     @Override
-    public List<TeamInvitation> findByInvitedUserId(String userId) {
+    public List<TeamInvitation> findByInvitedUserId(UUID userId) {
         return mongoRepository.findByInvitedUserId(userId).stream()
                 .map(mapper::toDomain)
                 .toList();
     }
 
     @Override
-    public List<TeamInvitation> findByTeamId(String teamId) {
+    public List<TeamInvitation> findByTeamId(UUID teamId) {
         return mongoRepository.findByTeamId(teamId).stream()
                 .map(mapper::toDomain)
                 .toList();
     }
 
     @Override
-    public Optional<TeamInvitation> findByTeamIdAndInvitedUserIdAndStatus(String teamId, String userId, InvitationStatus status) {
+    public Optional<TeamInvitation> findByTeamIdAndInvitedUserIdAndStatus(UUID teamId, UUID userId, InvitationStatus status) {
         return mongoRepository.findByTeamIdAndInvitedUserIdAndStatus(teamId, userId, status)
                 .map(mapper::toDomain);
     }

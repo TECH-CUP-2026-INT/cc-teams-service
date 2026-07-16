@@ -22,4 +22,8 @@ public class CreateTeamRequest {
 
     @Schema(description = "Colores del equipo (formato libre o código hex)", example = "#FF0000,#FFFFFF")
     private String colors;
+
+    @NotBlank(message = "Captain name is required")
+    @Schema(description = "Nombre completo del capitán que crea el equipo", example = "Ada Lovelace")
+    private String captainName;
 }

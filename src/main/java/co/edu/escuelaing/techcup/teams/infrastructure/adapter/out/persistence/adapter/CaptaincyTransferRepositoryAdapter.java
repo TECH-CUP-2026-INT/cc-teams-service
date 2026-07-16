@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -19,18 +20,21 @@ public class CaptaincyTransferRepositoryAdapter implements CaptaincyTransferRepo
 
     @Override
     public CaptaincyTransferRequest save(CaptaincyTransferRequest request) {
+        if (request.getId() == null) {
+            request.setId(UUID.randomUUID());
+        }
         var document = mapper.toDocument(request);
         var saved = mongoRepository.save(document);
         return mapper.toDomain(saved);
     }
 
     @Override
-    public Optional<CaptaincyTransferRequest> findById(String id) {
+    public Optional<CaptaincyTransferRequest> findById(UUID id) {
         return mongoRepository.findById(id).map(mapper::toDomain);
     }
 
     @Override
-    public Optional<CaptaincyTransferRequest> findByTeamIdAndStatus(String teamId, TransferRequestStatus status) {
+    public Optional<CaptaincyTransferRequest> findByTeamIdAndStatus(UUID teamId, TransferRequestStatus status) {
         return mongoRepository.findByTeamIdAndStatus(teamId, status).map(mapper::toDomain);
     }
 }

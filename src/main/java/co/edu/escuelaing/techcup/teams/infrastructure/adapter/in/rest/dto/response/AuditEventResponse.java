@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @Builder
@@ -16,14 +17,14 @@ import java.time.LocalDateTime;
 @Schema(description = "Evento de auditoría del servicio de equipos")
 public class AuditEventResponse {
 
-    @Schema(description = "ID del evento", example = "audit-abc123")
-    private String id;
+    @Schema(description = "ID del evento", example = "550e8400-e29b-41d4-a716-446655440000")
+    private UUID id;
 
-    @Schema(description = "ID del equipo relacionado", example = "team-abc123")
-    private String teamId;
+    @Schema(description = "ID del equipo relacionado", example = "550e8400-e29b-41d4-a716-446655440000")
+    private UUID teamId;
 
-    @Schema(description = "ID del usuario que realizó la acción", example = "user-123")
-    private String userId;
+    @Schema(description = "ID del usuario que realizó la acción", example = "550e8400-e29b-41d4-a716-446655440000")
+    private UUID userId;
 
     @Schema(description = "Tipo de acción", example = "TEAM_CREATED")
     private AuditActionType actionType;

@@ -5,8 +5,9 @@ import co.edu.escuelaing.techcup.teams.infrastructure.adapter.out.persistence.do
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.Optional;
+import java.util.UUID;
 
-public interface CaptaincyTransferMongoRepository extends MongoRepository<CaptaincyTransferDocument, String> {
+public interface CaptaincyTransferMongoRepository extends MongoRepository<CaptaincyTransferDocument, UUID> {
 
-    Optional<CaptaincyTransferDocument> findByTeamIdAndStatus(String teamId, TransferRequestStatus status);
+    Optional<CaptaincyTransferDocument> findByTeamIdAndStatus(UUID teamId, TransferRequestStatus status);
 }

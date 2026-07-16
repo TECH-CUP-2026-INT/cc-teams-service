@@ -4,12 +4,13 @@ import co.edu.escuelaing.techcup.teams.domain.enums.TransferRequestStatus;
 import co.edu.escuelaing.techcup.teams.domain.model.CaptaincyTransferRequest;
 
 import java.util.Optional;
+import java.util.UUID;
 
 public interface CaptaincyTransferRepositoryPort {
 
     CaptaincyTransferRequest save(CaptaincyTransferRequest request);
 
-    Optional<CaptaincyTransferRequest> findById(String id);
+    Optional<CaptaincyTransferRequest> findById(UUID id);
 
-    Optional<CaptaincyTransferRequest> findByTeamIdAndStatus(String teamId, TransferRequestStatus status);
+    Optional<CaptaincyTransferRequest> findByTeamIdAndStatus(UUID teamId, TransferRequestStatus status);
 }

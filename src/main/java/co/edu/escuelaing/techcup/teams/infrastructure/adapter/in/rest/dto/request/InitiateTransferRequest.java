@@ -1,11 +1,13 @@
 package co.edu.escuelaing.techcup.teams.infrastructure.adapter.in.rest.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.UUID;
 
 @Data
 @Builder
@@ -14,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Schema(description = "Datos para iniciar una transferencia de capitanía")
 public class InitiateTransferRequest {
 
-    @NotBlank(message = "New captain ID is required")
-    @Schema(description = "ID del jugador que recibirá la capitanía", example = "player-456")
-    private String newCaptainId;
+    @NotNull(message = "New captain ID is required")
+    @Schema(description = "ID del jugador que recibirá la capitanía", example = "550e8400-e29b-41d4-a716-446655440000")
+    private UUID newCaptainId;
 }

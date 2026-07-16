@@ -17,4 +17,7 @@ public class InvitationResponseRequest {
     @NotNull(message = "Accept field is required")
     @Schema(description = "true para aceptar la invitación, false para rechazarla", example = "true")
     private Boolean accept;
+
+    @Schema(description = "Nombre completo del jugador que responde (solo se usa si accept=true)", example = "Grace Hopper")
+    private String userName;
 }

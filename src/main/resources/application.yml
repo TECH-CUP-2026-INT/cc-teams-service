@@ -5,13 +5,15 @@ spring:
   data:
     mongodb:
       uri: ${MONGODB_URI:mongodb://localhost:27017/teams_service}
+      uuid-representation: standard
 
 server:
   port: ${SERVER_PORT:8082}
 
-# JWT Configuration (shared secret with identity-service, validation only)
-jwt:
-  secret: ${JWT_SECRET:defaultSecretKeyForDevelopmentOnlyChangeInProduction2026!}
+# Identity Service (JWT validation delegated remotely — no shared secret here)
+identity:
+  service:
+    base-url: ${IDENTITY_SERVICE_URL:http://localhost:8081}
 
 # Communications Service
 communications:

@@ -5,16 +5,17 @@ import co.edu.escuelaing.techcup.teams.domain.model.TeamInvitation;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public interface TeamInvitationRepositoryPort {
 
     TeamInvitation save(TeamInvitation invitation);
 
-    Optional<TeamInvitation> findById(String id);
+    Optional<TeamInvitation> findById(UUID id);
 
-    List<TeamInvitation> findByInvitedUserId(String userId);
+    List<TeamInvitation> findByInvitedUserId(UUID userId);
 
-    List<TeamInvitation> findByTeamId(String teamId);
+    List<TeamInvitation> findByTeamId(UUID teamId);
 
-    Optional<TeamInvitation> findByTeamIdAndInvitedUserIdAndStatus(String teamId, String userId, InvitationStatus status);
+    Optional<TeamInvitation> findByTeamIdAndInvitedUserIdAndStatus(UUID teamId, UUID userId, InvitationStatus status);
 }

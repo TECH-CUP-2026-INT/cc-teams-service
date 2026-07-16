@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @Builder
@@ -16,20 +17,20 @@ import java.time.LocalDateTime;
 @Schema(description = "Datos de una solicitud de transferencia de capitanía")
 public class CaptaincyTransferResponse {
 
-    @Schema(description = "ID de la solicitud", example = "transfer-abc123")
-    private String id;
+    @Schema(description = "ID de la solicitud", example = "550e8400-e29b-41d4-a716-446655440000")
+    private UUID id;
 
-    @Schema(description = "ID del equipo", example = "team-abc123")
-    private String teamId;
+    @Schema(description = "ID del equipo", example = "550e8400-e29b-41d4-a716-446655440000")
+    private UUID teamId;
 
     @Schema(description = "Nombre del equipo", example = "Los Halcones FC")
     private String teamName;
 
-    @Schema(description = "ID del capitán actual", example = "captain-123")
-    private String currentCaptainId;
+    @Schema(description = "ID del capitán actual", example = "550e8400-e29b-41d4-a716-446655440000")
+    private UUID currentCaptainId;
 
-    @Schema(description = "ID del nuevo capitán propuesto", example = "player-456")
-    private String newCaptainId;
+    @Schema(description = "ID del nuevo capitán propuesto", example = "550e8400-e29b-41d4-a716-446655440000")
+    private UUID newCaptainId;
 
     @Schema(description = "Quién inició la solicitud: CAPTAIN o PLAYER", example = "CAPTAIN")
     private String initiatedBy;

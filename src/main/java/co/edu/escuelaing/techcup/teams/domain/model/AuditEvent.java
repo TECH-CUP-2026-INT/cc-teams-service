@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @Builder
@@ -14,9 +15,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class AuditEvent {
 
-    private String id;
-    private String teamId;
-    private String userId;
+    private UUID id;
+    private UUID teamId;
+    private UUID userId;
     private AuditActionType actionType;
     private String description;
     private boolean success;

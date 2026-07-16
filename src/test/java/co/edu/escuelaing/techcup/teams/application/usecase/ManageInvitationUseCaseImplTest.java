@@ -18,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -47,7 +48,7 @@ class ManageInvitationUseCaseImplTest {
         Team team = TestFixtures.teamWithOnlyCaptain();
         when(teamRepository.findById(TestFixtures.TEAM_ID)).thenReturn(Optional.of(team));
         when(invitationRepository.findByTeamIdAndInvitedUserIdAndStatus(
-                eq(TestFixtures.TEAM_ID), eq("new-player"), eq(InvitationStatus.PENDING)))
+                eq(TestFixtures.TEAM_ID), eq(TestFixtures.NEW_PLAYER_ID), eq(InvitationStatus.PENDING)))
                 .thenReturn(Optional.empty());
         when(invitationRepository.save(any(TeamInvitation.class))).thenAnswer(inv -> {
             TeamInvitation i = inv.getArgument(0);
@@ -55,10 +56,10 @@ class ManageInvitationUseCaseImplTest {
             return i;
         });
 
-        TeamInvitation result = useCase.sendInvitation(TestFixtures.CAPTAIN_ID, TestFixtures.TEAM_ID, "new-player");
+        TeamInvitation result = useCase.sendInvitation(TestFixtures.CAPTAIN_ID, TestFixtures.TEAM_ID, TestFixtures.NEW_PLAYER_ID);
 
         assertThat(result.getStatus()).isEqualTo(InvitationStatus.PENDING);
-        verify(notificationPort).publishTeamInvitation(anyString(), anyString(), anyString(), anyString(), anyString());
+        verify(notificationPort).publishTeamInvitation(any(UUID.class), anyString(), any(UUID.class), any(UUID.class), any(UUID.class));
         verify(auditRepository).save(any());
     }
 
@@ -67,7 +68,7 @@ class ManageInvitationUseCaseImplTest {
         Team team = TestFixtures.team();
         when(teamRepository.findById(TestFixtures.TEAM_ID)).thenReturn(Optional.of(team));
 
-        assertThatThrownBy(() -> useCase.sendInvitation("other-user", TestFixtures.TEAM_ID, "new-player"))
+        assertThatThrownBy(() -> useCase.sendInvitation(TestFixtures.OTHER_USER_ID, TestFixtures.TEAM_ID, TestFixtures.NEW_PLAYER_ID))
                 .isInstanceOf(UnauthorizedTeamActionException.class);
     }
 
@@ -82,9 +83,9 @@ class ManageInvitationUseCaseImplTest {
 
     @Test
     void sendInvitationThrowsWhenTeamNotFound() {
-        when(teamRepository.findById("nonexistent")).thenReturn(Optional.empty());
+        when(teamRepository.findById(TestFixtures.NONEXISTENT_TEAM_ID)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> useCase.sendInvitation(TestFixtures.CAPTAIN_ID, "nonexistent", "new-player"))
+        assertThatThrownBy(() -> useCase.sendInvitation(TestFixtures.CAPTAIN_ID, TestFixtures.NONEXISTENT_TEAM_ID, TestFixtures.NEW_PLAYER_ID))
                 .isInstanceOf(TeamNotFoundException.class);
     }
 
@@ -94,10 +95,10 @@ class ManageInvitationUseCaseImplTest {
         Team team = TestFixtures.teamWithOnlyCaptain();
         when(invitationRepository.findById(TestFixtures.INVITATION_ID)).thenReturn(Optional.of(invitation));
         when(teamRepository.findById(TestFixtures.TEAM_ID)).thenReturn(Optional.of(team));
-        when(teamRepository.findByMembersUserId("new-player-1")).thenReturn(Optional.empty());
+        when(teamRepository.findByMembersUserId(TestFixtures.NEW_PLAYER_ID)).thenReturn(Optional.empty());
         when(invitationRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
-        TeamInvitation result = useCase.respondToInvitation("new-player-1", "New Player", TestFixtures.INVITATION_ID, true);
+        TeamInvitation result = useCase.respondToInvitation(TestFixtures.NEW_PLAYER_ID, "New Player", TestFixtures.INVITATION_ID, true);
 
         assertThat(result.getStatus()).isEqualTo(InvitationStatus.ACCEPTED);
         verify(teamRepository).save(any(Team.class));
@@ -109,7 +110,7 @@ class ManageInvitationUseCaseImplTest {
         when(invitationRepository.findById(TestFixtures.INVITATION_ID)).thenReturn(Optional.of(invitation));
         when(invitationRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
-        TeamInvitation result = useCase.respondToInvitation("new-player-1", "New Player", TestFixtures.INVITATION_ID, false);
+        TeamInvitation result = useCase.respondToInvitation(TestFixtures.NEW_PLAYER_ID, "New Player", TestFixtures.INVITATION_ID, false);
 
         assertThat(result.getStatus()).isEqualTo(InvitationStatus.REJECTED);
     }

@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -27,6 +28,9 @@ public class AuditEventRepositoryAdapter implements AuditEventRepositoryPort {
 
     @Override
     public AuditEvent save(AuditEvent event) {
+        if (event.getId() == null) {
+            event.setId(UUID.randomUUID());
+        }
         var document = mapper.toDocument(event);
         var saved = mongoRepository.save(document);
         return mapper.toDomain(saved);
@@ -34,19 +38,20 @@ public class AuditEventRepositoryAdapter implements AuditEventRepositoryPort {
 
     @Override
     public List<AuditEvent> findByFilters(LocalDateTime startDate, LocalDateTime endDate,
-                                          AuditActionType actionType, String teamId) {
+                                          AuditActionType actionType, UUID teamId) {
         Query query = new Query();
 
-        if (startDate != null) {
+        if (startDate != null && endDate != null) {
+            query.addCriteria(Criteria.where(TIMESTAMP_FIELD).gte(startDate).lte(endDate));
+        } else if (startDate != null) {
             query.addCriteria(Criteria.where(TIMESTAMP_FIELD).gte(startDate));
-        }
-        if (endDate != null) {
+        } else if (endDate != null) {
             query.addCriteria(Criteria.where(TIMESTAMP_FIELD).lte(endDate));
         }
         if (actionType != null) {
             query.addCriteria(Criteria.where("actionType").is(actionType));
         }
-        if (teamId != null && !teamId.isBlank()) {
+        if (teamId != null) {
             query.addCriteria(Criteria.where("teamId").is(teamId));
         }
 

@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @Builder
@@ -19,11 +20,11 @@ import java.time.LocalDateTime;
 public class AuditEventDocument {
 
     @Id
-    private String id;
+    private UUID id;
 
     @Indexed
-    private String teamId;
-    private String userId;
+    private UUID teamId;
+    private UUID userId;
     private AuditActionType actionType;
     private String description;
     private boolean success;

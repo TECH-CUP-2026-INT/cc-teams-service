@@ -2,11 +2,11 @@ package co.edu.escuelaing.techcup.teams.infrastructure.adapter.in.rest.controlle
 
 import co.edu.escuelaing.techcup.teams.domain.model.CaptaincyTransferRequest;
 import co.edu.escuelaing.techcup.teams.domain.port.in.TransferCaptaincyUseCase;
+import co.edu.escuelaing.techcup.teams.infrastructure.adapter.in.rest.dto.request.ApplyForCaptaincyRequest;
 import co.edu.escuelaing.techcup.teams.infrastructure.adapter.in.rest.dto.request.InitiateTransferRequest;
 import co.edu.escuelaing.techcup.teams.infrastructure.adapter.in.rest.dto.request.TransferResponseRequest;
 import co.edu.escuelaing.techcup.teams.infrastructure.adapter.in.rest.dto.response.CaptaincyTransferResponse;
 import co.edu.escuelaing.techcup.teams.infrastructure.mapper.CaptaincyTransferMapper;
-import co.edu.escuelaing.techcup.teams.shared.util.JwtUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -23,6 +23,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/v1/captaincy")
 @RequiredArgsConstructor
@@ -31,7 +33,6 @@ public class CaptaincyController {
 
     private final TransferCaptaincyUseCase transferCaptaincyUseCase;
     private final CaptaincyTransferMapper transferMapper;
-    private final JwtUtil jwtUtil;
 
     @PostMapping("/teams/{teamId}/transfer")
     @Operation(summary = "Iniciar transferencia de capitanía", description = "El Capitán selecciona un miembro del equipo para transferirle la capitanía. Se envía una notificación al jugador seleccionado.")
@@ -42,11 +43,11 @@ public class CaptaincyController {
             @ApiResponse(responseCode = "404", description = "Equipo no encontrado")
     })
     public ResponseEntity<CaptaincyTransferResponse> initiateTransfer(
-            @PathVariable String teamId,
+            @PathVariable UUID teamId,
             @RequestBody @Valid InitiateTransferRequest request,
             Authentication authentication) {
 
-        String captainId = (String) authentication.getPrincipal();
+        UUID captainId = (UUID) authentication.getPrincipal();
 
         CaptaincyTransferRequest transfer = transferCaptaincyUseCase.initiateTransfer(
                 captainId, teamId, request.getNewCaptainId());
@@ -63,15 +64,14 @@ public class CaptaincyController {
             @ApiResponse(responseCode = "404", description = "Equipo no encontrado")
     })
     public ResponseEntity<CaptaincyTransferResponse> applyForCaptaincy(
-            @PathVariable String teamId,
+            @PathVariable UUID teamId,
+            @RequestBody @Valid ApplyForCaptaincyRequest request,
             Authentication authentication) {
 
-        String playerId = (String) authentication.getPrincipal();
-        String token = (String) authentication.getCredentials();
-        String playerName = jwtUtil.extractFullName(token);
+        UUID playerId = (UUID) authentication.getPrincipal();
 
         CaptaincyTransferRequest transfer = transferCaptaincyUseCase.applyForCaptaincy(
-                playerId, playerName != null ? playerName : "Player", teamId);
+                playerId, request.getPlayerName(), teamId);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(transferMapper.toResponse(transfer));
     }
@@ -85,11 +85,11 @@ public class CaptaincyController {
             @ApiResponse(responseCode = "404", description = "Solicitud no encontrada")
     })
     public ResponseEntity<CaptaincyTransferResponse> respondToTransfer(
-            @PathVariable String transferId,
+            @PathVariable UUID transferId,
             @RequestBody @Valid TransferResponseRequest request,
             Authentication authentication) {
 
-        String userId = (String) authentication.getPrincipal();
+        UUID userId = (UUID) authentication.getPrincipal();
 
         CaptaincyTransferRequest transfer = transferCaptaincyUseCase.respondToTransfer(
                 userId, transferId, request.getAccept());

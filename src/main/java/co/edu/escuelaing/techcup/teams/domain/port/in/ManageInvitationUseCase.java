@@ -3,14 +3,15 @@ package co.edu.escuelaing.techcup.teams.domain.port.in;
 import co.edu.escuelaing.techcup.teams.domain.model.TeamInvitation;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface ManageInvitationUseCase {
 
-    TeamInvitation sendInvitation(String captainId, String teamId, String invitedUserId);
+    TeamInvitation sendInvitation(UUID captainId, UUID teamId, UUID invitedUserId);
 
-    TeamInvitation respondToInvitation(String userId, String userName, String invitationId, boolean accept);
+    TeamInvitation respondToInvitation(UUID userId, String userName, UUID invitationId, boolean accept);
 
-    List<TeamInvitation> getInvitationsForUser(String userId);
+    List<TeamInvitation> getInvitationsForUser(UUID userId);
 
-    List<TeamInvitation> getInvitationsForTeam(String captainId, String teamId);
+    List<TeamInvitation> getInvitationsForTeam(UUID captainId, UUID teamId);
 }

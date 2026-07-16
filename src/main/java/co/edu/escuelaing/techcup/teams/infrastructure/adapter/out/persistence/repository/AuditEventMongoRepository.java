@@ -3,5 +3,7 @@ package co.edu.escuelaing.techcup.teams.infrastructure.adapter.out.persistence.r
 import co.edu.escuelaing.techcup.teams.infrastructure.adapter.out.persistence.document.AuditEventDocument;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface AuditEventMongoRepository extends MongoRepository<AuditEventDocument, String> {
+import java.util.UUID;
+
+public interface AuditEventMongoRepository extends MongoRepository<AuditEventDocument, UUID> {
 }

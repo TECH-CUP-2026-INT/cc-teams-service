@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @Builder
@@ -15,12 +16,12 @@ import java.util.List;
 @AllArgsConstructor
 public class Team {
 
-    private String id;
+    private UUID id;
     private String name;
     private byte[] logo;
     private String logoContentType;
     private String colors;
-    private String captainId;
+    private UUID captainId;
 
     @Builder.Default
     private List<TeamMember> members = new ArrayList<>();
@@ -35,7 +36,7 @@ public class Team {
         return members.size() >= MAX_MEMBERS;
     }
 
-    public boolean hasMember(String userId) {
+    public boolean hasMember(UUID userId) {
         return members.stream().anyMatch(m -> m.getUserId().equals(userId));
     }
 }

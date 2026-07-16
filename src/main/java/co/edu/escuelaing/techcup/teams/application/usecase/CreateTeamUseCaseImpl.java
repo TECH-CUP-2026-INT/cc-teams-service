@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +26,7 @@ public class CreateTeamUseCaseImpl implements CreateTeamUseCase {
     private final AuditEventRepositoryPort auditRepository;
 
     @Override
-    public Team createTeam(String captainId, String captainName, String teamName,
+    public Team createTeam(UUID captainId, String captainName, String teamName,
                            byte[] logo, String logoContentType, String colors) {
         if (teamRepository.existsByName(teamName)) {
             throw new TeamNameAlreadyExistsException(teamName);

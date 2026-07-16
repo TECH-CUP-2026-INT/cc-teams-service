@@ -65,7 +65,7 @@ class TransferCaptaincyUseCaseImplTest {
         Team team = TestFixtures.team();
         when(teamRepository.findById(TestFixtures.TEAM_ID)).thenReturn(Optional.of(team));
 
-        assertThatThrownBy(() -> useCase.initiateTransfer("other-user", TestFixtures.TEAM_ID, TestFixtures.PLAYER_ID))
+        assertThatThrownBy(() -> useCase.initiateTransfer(TestFixtures.OTHER_USER_ID, TestFixtures.TEAM_ID, TestFixtures.PLAYER_ID))
                 .isInstanceOf(UnauthorizedTeamActionException.class);
     }
 
@@ -74,7 +74,7 @@ class TransferCaptaincyUseCaseImplTest {
         Team team = TestFixtures.team();
         when(teamRepository.findById(TestFixtures.TEAM_ID)).thenReturn(Optional.of(team));
 
-        assertThatThrownBy(() -> useCase.initiateTransfer(TestFixtures.CAPTAIN_ID, TestFixtures.TEAM_ID, "non-member"))
+        assertThatThrownBy(() -> useCase.initiateTransfer(TestFixtures.CAPTAIN_ID, TestFixtures.TEAM_ID, TestFixtures.NON_MEMBER_ID))
                 .isInstanceOf(UnauthorizedTeamActionException.class);
     }
 

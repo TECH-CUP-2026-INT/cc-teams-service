@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @Builder
@@ -20,7 +21,7 @@ import java.util.List;
 public class TeamDocument {
 
     @Id
-    private String id;
+    private UUID id;
 
     @Indexed(unique = true)
     private String name;
@@ -30,7 +31,7 @@ public class TeamDocument {
     private String colors;
 
     @Indexed
-    private String captainId;
+    private UUID captainId;
 
     private List<TeamMemberDocument> members;
 

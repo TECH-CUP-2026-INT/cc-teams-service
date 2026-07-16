@@ -1,6 +1,6 @@
 package co.edu.escuelaing.techcup.teams.infrastructure.config.security;
 
-import co.edu.escuelaing.techcup.teams.shared.util.JwtUtil;
+import co.edu.escuelaing.techcup.teams.domain.port.out.IdentityTokenValidationPort;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -25,8 +25,8 @@ public class SecurityConfig {
     };
 
     @Bean
-    public JwtAuthenticationFilter jwtAuthenticationFilter(JwtUtil jwtUtil) {
-        return new JwtAuthenticationFilter(jwtUtil);
+    public JwtAuthenticationFilter jwtAuthenticationFilter(IdentityTokenValidationPort identityTokenValidationPort) {
+        return new JwtAuthenticationFilter(identityTokenValidationPort);
     }
 
     @Bean

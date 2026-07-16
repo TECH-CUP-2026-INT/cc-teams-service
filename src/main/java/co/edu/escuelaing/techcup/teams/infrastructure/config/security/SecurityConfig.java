@@ -39,6 +39,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
                         .requestMatchers(HttpMethod.GET, "/teams/{teamId}").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/teams/by-player/{playerId}/roster").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/teams/by-player/{playerId}/active-tournament").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)

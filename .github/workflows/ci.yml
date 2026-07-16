@@ -40,6 +40,15 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           MONGODB_URI: mongodb://localhost:27017/teams_service_test
           JWT_SECRET: ci-test-secret-key-for-github-actions-pipeline-2026!
+        with:
+          args: >
+            -Dsonar.organization=tech-cup-2026-int
+            -Dsonar.projectKey=TECH-CUP-2026-INT_cc-teams-service
+            -Dsonar.projectName=cc-teams-service
+            -Dsonar.java.source=21
+            -Dsonar.sources=src/main/java
+            -Dsonar.tests=src/test/java
+            -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
 
       - name: Upload test reports
         if: failure()

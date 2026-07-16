@@ -42,6 +42,13 @@ jobs:
           path: target/surefire-reports/
           retention-days: 7
 
+      - name: Subir reporte de cobertura
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-report
+          path: target/site/jacoco/jacoco.xml
+          retention-days: 1
+
   sonar:
     name: Análisis SonarCloud
     runs-on: ubuntu-latest
@@ -58,6 +65,12 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
           cache: 'maven'
+
+      - name: Descargar reporte de cobertura
+        uses: actions/download-artifact@v4
+        with:
+          name: jacoco-report
+          path: target/site/jacoco/
 
       - name: Análisis SonarCloud
         uses: SonarSource/sonarqube-scan-action@v5.0.0

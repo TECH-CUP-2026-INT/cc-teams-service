@@ -1,0 +1,42 @@
+spring:
+  application:
+    name: service-teams
+
+  data:
+    mongodb:
+      uri: ${MONGODB_URI:mongodb://localhost:27017/teams_service}
+      uuid-representation: standard
+
+server:
+  port: ${SERVER_PORT:8082}
+
+# Identity Service (JWT validation delegated remotely — no shared secret here)
+identity:
+  service:
+    base-url: ${IDENTITY_SERVICE_URL:http://localhost:8081}
+
+# Communications Service
+communications:
+  base-url: ${COMMUNICATIONS_URL:http://localhost:8083}
+
+# Tournament Service (mk-tournament-service) — sin server.port propio en ese
+# repo, corre en el puerto 8080 por defecto de Spring Boot
+tournament:
+  service:
+    base-url: ${TOURNAMENT_SERVICE_URL:http://localhost:8080}
+
+# Logging
+logging:
+  level:
+    root: INFO
+    co.edu.escuelaing.techcup.teams: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+# Swagger
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method

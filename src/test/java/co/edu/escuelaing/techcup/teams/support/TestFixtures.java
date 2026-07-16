@@ -80,6 +80,29 @@ public final class TestFixtures {
                 .build();
     }
 
+    public static Team teamEligibleForTournament() {
+        List<TeamMember> members = new ArrayList<>(List.of(captainMember(), playerMember()));
+        for (int i = 0; i < 5; i++) {
+            members.add(TeamMember.builder()
+                    .userId(UUID.randomUUID())
+                    .fullName("Player " + i)
+                    .role(TeamMemberRole.PLAYER)
+                    .joinedAt(LocalDateTime.now(ZoneOffset.UTC).minusDays(1))
+                    .build());
+        }
+        return Team.builder()
+                .id(TEAM_ID)
+                .name(TEAM_NAME)
+                .logo(new byte[]{1, 2, 3})
+                .logoContentType("image/png")
+                .colors("#FF0000,#FFFFFF")
+                .captainId(CAPTAIN_ID)
+                .members(members)
+                .createdAt(LocalDateTime.now(ZoneOffset.UTC).minusDays(5))
+                .updatedAt(LocalDateTime.now(ZoneOffset.UTC).minusDays(1))
+                .build();
+    }
+
     public static TeamInvitation pendingInvitation() {
         return TeamInvitation.builder()
                 .id(INVITATION_ID)

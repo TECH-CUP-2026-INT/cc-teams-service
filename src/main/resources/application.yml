@@ -19,6 +19,12 @@ identity:
 communications:
   base-url: ${COMMUNICATIONS_URL:http://localhost:8083}
 
+# Tournament Service (mk-tournament-service) — sin server.port propio en ese
+# repo, corre en el puerto 8080 por defecto de Spring Boot
+tournament:
+  service:
+    base-url: ${TOURNAMENT_SERVICE_URL:http://localhost:8080}
+
 # Logging
 logging:
   level:

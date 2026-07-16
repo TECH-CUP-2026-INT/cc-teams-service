@@ -8,6 +8,9 @@ import co.edu.escuelaing.techcup.teams.domain.exception.PlayerAlreadyInTeamExcep
 import co.edu.escuelaing.techcup.teams.domain.exception.TeamFullException;
 import co.edu.escuelaing.techcup.teams.domain.exception.TeamNameAlreadyExistsException;
 import co.edu.escuelaing.techcup.teams.domain.exception.TeamNotFoundException;
+import co.edu.escuelaing.techcup.teams.domain.exception.TournamentEnrollmentRejectedException;
+import co.edu.escuelaing.techcup.teams.domain.exception.TournamentNotFoundException;
+import co.edu.escuelaing.techcup.teams.domain.exception.TournamentServiceUnavailableException;
 import co.edu.escuelaing.techcup.teams.domain.exception.TransferNotFoundException;
 import co.edu.escuelaing.techcup.teams.domain.exception.UnauthorizedTeamActionException;
 import lombok.extern.slf4j.Slf4j;
@@ -45,6 +48,21 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(TransferNotFoundException.class)
     public ResponseEntity<Map<String, Object>> handleTransferNotFound(TransferNotFoundException ex) {
         return buildResponse(HttpStatus.NOT_FOUND, ex.getErrorCode(), ex.getMessage());
+    }
+
+    @ExceptionHandler(TournamentNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleTournamentNotFound(TournamentNotFoundException ex) {
+        return buildResponse(HttpStatus.NOT_FOUND, ex.getErrorCode(), ex.getMessage());
+    }
+
+    @ExceptionHandler(TournamentEnrollmentRejectedException.class)
+    public ResponseEntity<Map<String, Object>> handleTournamentEnrollmentRejected(TournamentEnrollmentRejectedException ex) {
+        return buildResponse(HttpStatus.CONFLICT, ex.getErrorCode(), ex.getMessage());
+    }
+
+    @ExceptionHandler(TournamentServiceUnavailableException.class)
+    public ResponseEntity<Map<String, Object>> handleTournamentServiceUnavailable(TournamentServiceUnavailableException ex) {
+        return buildResponse(HttpStatus.BAD_GATEWAY, ex.getErrorCode(), ex.getMessage());
     }
 
     @ExceptionHandler(TeamNameAlreadyExistsException.class)

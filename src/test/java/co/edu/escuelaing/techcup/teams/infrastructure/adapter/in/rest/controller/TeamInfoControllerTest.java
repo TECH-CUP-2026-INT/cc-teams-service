@@ -1,0 +1,112 @@
+package co.edu.escuelaing.techcup.teams.infrastructure.adapter.in.rest.controller;
+
+import co.edu.escuelaing.techcup.teams.domain.exception.TeamNotFoundException;
+import co.edu.escuelaing.techcup.teams.domain.port.in.CheckPlayerActiveTournamentUseCase;
+import co.edu.escuelaing.techcup.teams.domain.port.in.GetTeamInfoUseCase;
+import co.edu.escuelaing.techcup.teams.domain.port.in.GetTeamRosterUseCase;
+import co.edu.escuelaing.techcup.teams.infrastructure.adapter.in.rest.handler.GlobalExceptionHandler;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@WebMvcTest(
+        controllers = TeamInfoController.class,
+        excludeAutoConfiguration = {
+                SecurityAutoConfiguration.class,
+                SecurityFilterAutoConfiguration.class
+        }
+)
+@AutoConfigureMockMvc(addFilters = false)
+@Import(GlobalExceptionHandler.class)
+class TeamInfoControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @MockBean
+    private GetTeamInfoUseCase getTeamInfoUseCase;
+    @MockBean
+    private GetTeamRosterUseCase getTeamRosterUseCase;
+    @MockBean
+    private CheckPlayerActiveTournamentUseCase checkPlayerActiveTournamentUseCase;
+
+    private final UUID teamId = UUID.randomUUID();
+
+    @Test
+    void getTeamInfoReturns200() throws Exception {
+        when(getTeamInfoUseCase.getTeamInfo(teamId)).thenReturn(new GetTeamInfoUseCase.TeamInfo("Los Halcones FC", 7));
+
+        mockMvc.perform(get("/teams/" + teamId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.teamName").value("Los Halcones FC"))
+                .andExpect(jsonPath("$.rosterSize").value(7));
+    }
+
+    @Test
+    void getTeamInfoReturns404WhenTeamMissing() throws Exception {
+        when(getTeamInfoUseCase.getTeamInfo(teamId)).thenThrow(new TeamNotFoundException(teamId));
+
+        mockMvc.perform(get("/teams/" + teamId))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void getTeamRosterByPlayerReturnsTeamAndMembers() throws Exception {
+        UUID playerId = UUID.randomUUID();
+        UUID teammateId = UUID.randomUUID();
+        when(getTeamRosterUseCase.getTeamRosterByPlayer(playerId))
+                .thenReturn(Optional.of(new GetTeamRosterUseCase.TeamRoster(teamId, List.of(playerId, teammateId))));
+
+        mockMvc.perform(get("/teams/by-player/" + playerId + "/roster"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.teamId").value(teamId.toString()))
+                .andExpect(jsonPath("$.memberIds.length()").value(2));
+    }
+
+    @Test
+    void getTeamRosterByPlayerReturnsEmptyWhenPlayerHasNoTeam() throws Exception {
+        UUID playerId = UUID.randomUUID();
+        when(getTeamRosterUseCase.getTeamRosterByPlayer(playerId)).thenReturn(Optional.empty());
+
+        mockMvc.perform(get("/teams/by-player/" + playerId + "/roster"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.teamId").doesNotExist())
+                .andExpect(jsonPath("$.memberIds.length()").value(0));
+    }
+
+    @Test
+    void hasActiveTournamentReturnsTrueWhenPlayerTeamHasActiveTournament() throws Exception {
+        UUID playerId = UUID.randomUUID();
+        when(checkPlayerActiveTournamentUseCase.hasActiveTournament(playerId)).thenReturn(true);
+
+        mockMvc.perform(get("/teams/by-player/" + playerId + "/active-tournament"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.playerId").value(playerId.toString()))
+                .andExpect(jsonPath("$.hasActiveTournament").value(true));
+    }
+
+    @Test
+    void hasActiveTournamentReturnsFalseWhenPlayerHasNoTeamOrNoActiveTournament() throws Exception {
+        UUID playerId = UUID.randomUUID();
+        when(checkPlayerActiveTournamentUseCase.hasActiveTournament(playerId)).thenReturn(false);
+
+        mockMvc.perform(get("/teams/by-player/" + playerId + "/active-tournament"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.hasActiveTournament").value(false));
+    }
+}

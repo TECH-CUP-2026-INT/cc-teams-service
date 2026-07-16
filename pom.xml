@@ -22,9 +22,8 @@
 		<springdoc.version>2.8.4</springdoc.version>
 		<jacoco.version>0.8.12</jacoco.version>
 		<spring-cloud.version>2025.0.2</spring-cloud.version>
-		<sonar-maven-plugin.version>5.1.0.4759</sonar-maven-plugin.version>
-		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 		<sonar.organization>tech-cup-2026-int</sonar.organization>
+		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 		<sonar.projectKey>TECH-CUP-2026-INT_cc-teams-service</sonar.projectKey>
 		<sonar.projectName>cc-teams-service</sonar.projectName>
 		<sonar.java.source>21</sonar.java.source>
@@ -208,24 +207,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
-	<profiles>
-		<profile>
-			<id>sonar</id>
-			<activation>
-				<property>
-					<name>sonar.token</name>
-				</property>
-			</activation>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.sonarsource.scanner.maven</groupId>
-						<artifactId>sonar-maven-plugin</artifactId>
-						<version>${sonar-maven-plugin.version}</version>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
 </project>

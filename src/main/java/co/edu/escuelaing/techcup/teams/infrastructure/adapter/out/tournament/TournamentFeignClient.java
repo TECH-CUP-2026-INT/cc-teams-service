@@ -3,6 +3,7 @@ package co.edu.escuelaing.techcup.teams.infrastructure.adapter.out.tournament;
 import co.edu.escuelaing.techcup.teams.infrastructure.adapter.out.tournament.dto.EnrollTeamRequestDTO;
 import co.edu.escuelaing.techcup.teams.infrastructure.adapter.out.tournament.dto.EnrollmentResponseDTO;
 import co.edu.escuelaing.techcup.teams.infrastructure.adapter.out.tournament.dto.RegisteredTeamResponseDTO;
+import co.edu.escuelaing.techcup.teams.infrastructure.adapter.out.tournament.dto.TeamActiveEnrollmentResponseDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,4 +22,12 @@ public interface TournamentFeignClient {
     @PostMapping("/tournaments/{tournamentId}/enrollments")
     EnrollmentResponseDTO enrollTeam(@PathVariable("tournamentId") UUID tournamentId,
                                       @RequestBody EnrollTeamRequestDTO request);
+
+    /**
+     * Contrato asumido — ver {@link TeamActiveEnrollmentResponseDTO}. Hoy
+     * Tournament Service no expone esta ruta; cualquier llamada fallará con
+     * FeignException hasta que la reconstruyan.
+     */
+    @GetMapping("/tournaments/by-team/{teamId}/active")
+    TeamActiveEnrollmentResponseDTO hasActiveEnrollment(@PathVariable("teamId") UUID teamId);
 }

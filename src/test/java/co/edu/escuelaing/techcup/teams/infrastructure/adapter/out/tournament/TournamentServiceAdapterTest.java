@@ -6,6 +6,7 @@ import co.edu.escuelaing.techcup.teams.domain.exception.TournamentServiceUnavail
 import co.edu.escuelaing.techcup.teams.domain.port.out.TournamentServicePort;
 import co.edu.escuelaing.techcup.teams.infrastructure.adapter.out.tournament.dto.EnrollmentResponseDTO;
 import co.edu.escuelaing.techcup.teams.infrastructure.adapter.out.tournament.dto.RegisteredTeamResponseDTO;
+import co.edu.escuelaing.techcup.teams.infrastructure.adapter.out.tournament.dto.TeamActiveEnrollmentResponseDTO;
 import feign.FeignException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -111,5 +112,26 @@ class TournamentServiceAdapterTest {
 
         assertThatThrownBy(() -> adapter.enrollTeam(TOURNAMENT_ID, TEAM_ID))
                 .isInstanceOf(TournamentServiceUnavailableException.class);
+    }
+
+    @Test
+    void hasActiveEnrollmentReturnsTrueWhenTournamentReportsActive() {
+        when(feignClient.hasActiveEnrollment(TEAM_ID)).thenReturn(new TeamActiveEnrollmentResponseDTO(TEAM_ID, true));
+
+        assertThat(adapter.hasActiveEnrollment(TEAM_ID)).isTrue();
+    }
+
+    @Test
+    void hasActiveEnrollmentReturnsFalseWhenTournamentReportsInactive() {
+        when(feignClient.hasActiveEnrollment(TEAM_ID)).thenReturn(new TeamActiveEnrollmentResponseDTO(TEAM_ID, false));
+
+        assertThat(adapter.hasActiveEnrollment(TEAM_ID)).isFalse();
+    }
+
+    @Test
+    void hasActiveEnrollmentFailsOpenWhenTournamentEndpointIsUnavailable() {
+        when(feignClient.hasActiveEnrollment(TEAM_ID)).thenThrow(mock(FeignException.class));
+
+        assertThat(adapter.hasActiveEnrollment(TEAM_ID)).isFalse();
     }
 }

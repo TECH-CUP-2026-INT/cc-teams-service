@@ -9,11 +9,13 @@ import co.edu.escuelaing.techcup.teams.infrastructure.adapter.out.tournament.dto
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Component
 public class TournamentServiceAdapter implements TournamentServicePort {
 
@@ -49,6 +51,18 @@ public class TournamentServiceAdapter implements TournamentServicePort {
             throw new TournamentEnrollmentRejectedException(extractMessage(e));
         } catch (FeignException e) {
             throw new TournamentServiceUnavailableException(tournamentId, e);
+        }
+    }
+
+    @Override
+    public boolean hasActiveEnrollment(UUID teamId) {
+        try {
+            return tournamentFeignClient.hasActiveEnrollment(teamId).hasActiveEnrollment();
+        } catch (FeignException e) {
+            log.warn("No se pudo consultar el estado de torneo activo del equipo {} en Tournament Service " +
+                    "(endpoint pendiente de reconstruir en ese repo); se asume sin torneo activo. Causa: {}",
+                    teamId, e.getMessage());
+            return false;
         }
     }
 

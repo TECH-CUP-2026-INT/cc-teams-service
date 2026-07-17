@@ -1,0 +1,3 @@
+# openspec/changes/ (active changes live here)
+# Each active change gets a subdirectory: openspec/changes/{change-name}/
+# Completed changes are moved to openspec/changes/archive/YYYY-MM-DD-{change-name}/

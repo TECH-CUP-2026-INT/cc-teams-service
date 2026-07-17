@@ -6,6 +6,7 @@ import co.edu.escuelaing.techcup.teams.domain.port.in.GetTeamRosterUseCase;
 import co.edu.escuelaing.techcup.teams.infrastructure.adapter.in.rest.dto.response.PlayerActiveTournamentResponse;
 import co.edu.escuelaing.techcup.teams.infrastructure.adapter.in.rest.dto.response.TeamInfoResponse;
 import co.edu.escuelaing.techcup.teams.infrastructure.adapter.in.rest.dto.response.TeamRosterResponse;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +39,7 @@ public class TeamInfoController {
     private final CheckPlayerActiveTournamentUseCase checkPlayerActiveTournamentUseCase;
 
     @GetMapping("/{teamId}")
+    @Hidden
     @Operation(summary = "Info de equipo para Tournament Service", description = "Devuelve nombre y tamano de roster de un equipo. Sin autenticacion: llamado servicio-a-servicio por mk-tournament-service.")
     public ResponseEntity<TeamInfoResponse> getTeamInfo(@PathVariable UUID teamId) {
         GetTeamInfoUseCase.TeamInfo info = getTeamInfoUseCase.getTeamInfo(teamId);
@@ -45,6 +47,7 @@ public class TeamInfoController {
     }
 
     @GetMapping("/by-player/{playerId}/roster")
+    @Hidden
     @Operation(summary = "Roster del equipo de un jugador para Users & Players Service",
             description = "Devuelve el id del equipo y los ids de todos sus miembros, dado el id de un jugador. "
                     + "Si el jugador no pertenece a ningun equipo, retorna teamId nulo y memberIds vacio. "
@@ -57,6 +60,7 @@ public class TeamInfoController {
     }
 
     @GetMapping("/by-player/{playerId}/active-tournament")
+    @Hidden
     @Operation(summary = "Estado de torneo activo del equipo de un jugador para Users & Players Service",
             description = "Resuelve el equipo del jugador y consulta a Tournament Service si tiene una "
                     + "inscripcion activa/en curso. Retorna false si el jugador no tiene equipo, o si "

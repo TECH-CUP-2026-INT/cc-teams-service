@@ -112,10 +112,7 @@ jobs:
 
       - name: Deploy to Azure Container Apps
         run: |
-          az containerapp update \
-            --name teams-service \
-            --resource-group techcup \
-            IMAGE_LOWER=$(echo "ghcr.io/${{ github.repository }}:latest" | tr '[:upper:]' '[:lower:]')
+          IMAGE_LOWER=$(echo "ghcr.io/${{ github.repository }}:latest" | tr '[:upper:]' '[:lower:]')
           az containerapp update \
             --name teams-service \
             --resource-group techcup \

@@ -24,17 +24,17 @@ The repository MUST have secrets `AZURE_WEBAPP_NAME` and `AZURE_WEBAPP_PUBLISH_P
 
 ### Requirement: App Service Port Configuration MUST Match Container
 
-Azure App Service `teams-service` MUST have the application setting `WEBSITES_PORT=8082` set, matching the Dockerfile `EXPOSE 8082`.
+Azure App Service `teams-service` MUST have the application setting `WEBSITES_PORT=5622` set, matching the Dockerfile `EXPOSE 5622`.
 
 #### Scenario: Port configured correctly
 
-- GIVEN the App Service application settings include `WEBSITES_PORT` = `8082`
+- GIVEN the App Service application settings include `WEBSITES_PORT` = `5622`
 - WHEN the container starts
-- THEN the App Service MUST route ingress to container port 8082
+- THEN the App Service MUST route ingress to container port 5622
 
 #### Scenario: Port mismatch
 
-- GIVEN `WEBSITES_PORT` is unset or not `8082`
+- GIVEN `WEBSITES_PORT` is unset or not `5622`
 - WHEN the container starts
 - THEN the App Service MUST NOT route traffic to the running service (connection failure)
 

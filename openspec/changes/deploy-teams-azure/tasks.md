@@ -29,7 +29,7 @@ Chain strategy: pending
 
 ## Phase 2: Azure App Service Config
 
-- [ ] 2.1 In App Service `teams-service` → Configuración → Variables de entorno, set `WEBSITES_PORT`=8082.
+- [ ] 2.1 In App Service `teams-service` → Configuración → Variables de entorno, set `WEBSITES_PORT`=5622.
 - [ ] 2.2 Set `MONGODB_URI` = Cosmos Mongo connection string (`mongodb+srv://rojasriverocarlosduban_db_user:KALI25@team-service.thmvfqe.mongodb.net/?appName=team-service`).
 - [ ] 2.3 Set `IDENTITY_SERVICE_URL`, `COMMUNICATIONS_URL`, `TOURNAMENT_SERVICE_URL` = localhost defaults (deferred per user).
 

@@ -29,7 +29,7 @@ This is a **pure config + deploy change with zero source-code modification**. Th
     Azure Web App for Containers pulls ghcr image
          │
          ▼
-    container runs: WEBSITES_PORT=8082  +  MONGODB_URI
+    container runs: WEBSITES_PORT=5622  +  MONGODB_URI
          │
          ▼
     /actuator/health → 200 ; logs show Mongo connect OK
@@ -39,15 +39,15 @@ This is a **pure config + deploy change with zero source-code modification**. Th
 | File | Action | Description |
 |------|--------|-------------|
 | `.github/workflows/ci.yml` | Push (already prepared) | Triggers `deploy` on `main` via existing job. |
-| `Dockerfile` | Push (already prepared) | Multi-stage, `EXPOSE 8082`. |
+| `Dockerfile` | Push (already prepared) | Multi-stage, `EXPOSE 5622`. |
 | GitHub repo secrets | Create | `AZURE_WEBAPP_NAME`, `AZURE_WEBAPP_PUBLISH_PROFILE`. |
-| Azure App Service settings | Create | `WEBSITES_PORT=8082`, `MONGODB_URI`, 3 service URLs. |
+| Azure App Service settings | Create | `WEBSITES_PORT=5622`, `MONGODB_URI`, 3 service URLs. |
 
 NO source-code files are touched.
 
 ## Interfaces / Contracts
 
-No new interfaces. `application.yml` already binds `${MONGODB_URI}`, `${SERVER_PORT:8082}`, `${IDENTITY_SERVICE_URL}`, `${COMMUNICATIONS_URL}`, `${TOURNAMENT_SERVICE_URL}` — all satisfied by App Service settings. No code contract change.
+No new interfaces. `application.yml` already binds `${MONGODB_URI}`, `${SERVER_PORT:5622}`, `${IDENTITY_SERVICE_URL}`, `${COMMUNICATIONS_URL}`, `${TOURNAMENT_SERVICE_URL}` — all satisfied by App Service settings. No code contract change.
 
 ## Testing Strategy
 

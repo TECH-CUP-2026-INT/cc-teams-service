@@ -12,7 +12,7 @@ context: |
   dockerizes to GHCR (latest/main, branch, sha tags), deploys to Azure Web App for Containers on main.
   Conventions: package co.edu.escuelaing.techcup.teams; MapStruct + Lombok; springdoc OpenAPI UI at /swagger-ui.html.
   Config via env vars: MONGODB_URI, JWT_SECRET, INTERNAL_API_KEY, IDENTITY_SERVICE_URL,
-  COMMUNICATIONS_URL, TOURNAMENT_SERVICE_URL, SERVER_PORT (default 8082).
+  COMMUNICATIONS_URL, TOURNAMENT_SERVICE_URL, SERVER_PORT (default 5622).
 
 rules:
   proposal:

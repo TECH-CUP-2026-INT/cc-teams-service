@@ -15,7 +15,7 @@ Make `cc-teams-service` (artifactId `service-teams`) production-available by dep
 
 ### In Scope
 - Create GitHub repo secrets: `AZURE_WEBAPP_NAME`, `AZURE_WEBAPP_PUBLISH_PROFILE`.
-- Set Azure App Service app settings: `WEBSITES_PORT=8082`, `MONGODB_URI`, `IDENTITY_SERVICE_URL`, `COMMUNICATIONS_URL`, `TOURNAMENT_SERVICE_URL`.
+- Set Azure App Service app settings: `WEBSITES_PORT=5622`, `MONGODB_URI`, `IDENTITY_SERVICE_URL`, `COMMUNICATIONS_URL`, `TOURNAMENT_SERVICE_URL`.
 - Push already-prepared `.github/workflows/ci.yml` + `Dockerfile` to `main` to trigger the pipeline.
 - Verify `deploy` job is green and health endpoint responds.
 
@@ -44,7 +44,7 @@ Leverage the existing CI pipeline as-is. Provision secrets + App Service env var
 | Area | Impact | Description |
 |------|--------|-------------|
 | `.github/workflows/ci.yml` | Push (prepared) | Already prepared; triggers deploy on `main`. |
-| `Dockerfile` | Push (prepared) | Multi-stage, `EXPOSE 8082`; already prepared. |
+| `Dockerfile` | Push (prepared) | Multi-stage, `EXPOSE 5622`; already prepared. |
 | GitHub repo secrets | New | `AZURE_WEBAPP_NAME`, `AZURE_WEBAPP_PUBLISH_PROFILE`. |
 | Azure App Service config | New | `WEBSITES_PORT`, `MONGODB_URI`, service URLs app settings. |
 
@@ -53,7 +53,7 @@ Leverage the existing CI pipeline as-is. Provision secrets + App Service env var
 | Risk | Likelihood | Mitigation |
 |------|------------|------------|
 | Secret missing before push | High | Create both secrets before pushing to `main`. |
-| `WEBSITES_PORT` missing | Med | Set `WEBSITES_PORT=8082` explicitly. |
+| `WEBSITES_PORT` missing | Med | Set `WEBSITES_PORT=5622` explicitly. |
 | `MONGODB_URI` missing | Med | Set app setting with CosmosDB/Mongo connection string. |
 | localhost service URLs | High | Documented; cross-service calls fail, service starts (deferred). |
 | Publish profile leak (in chat) | Med | Rotate publish profile post-deploy; see rollback. |

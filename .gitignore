@@ -32,5 +32,8 @@ build/
 ### VS Code ###
 .vscode/
 
-### MkDocs ###
-site/
+### Node / tooling ###
+node_modules/
+
+### Local agent tooling (may contain secrets, never commit) ###
+.atl/

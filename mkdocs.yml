@@ -1,0 +1,63 @@
+site_name: TechCup — Teams Service
+site_description: Technical documentation for the teams microservice of the TechCup Fútbol platform.
+site_author: TECH-CUP 2026 INT
+site_url: https://tech-cup-2026-int.github.io/cc-teams-service/
+
+repo_name: TECH-CUP-2026-INT/cc-teams-service
+repo_url: https://github.com/TECH-CUP-2026-INT/cc-teams-service
+
+copyright: Copyright &copy; 2026 TECH-CUP 2026 INT — Escuela Colombiana de Ingeniería Julio Garavito
+
+theme:
+  name: material
+  language: en
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  font:
+    text: Roboto
+    code: Roboto Mono
+
+extra_css:
+  - assets/stylesheets/extra.css
+
+plugins:
+  - search
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - toc:
+      permalink: true
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist
+
+nav:
+  - Home: index.md
+  - Architecture: arquitectura.md
+  - API: api.md
+  - Configuration: configuracion.md
+  - Team: equipo.md

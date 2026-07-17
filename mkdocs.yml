@@ -1,0 +1,45 @@
+site_name: Teams Service (service-teams)
+site_description: TechCup Fútbol - Teams Service documentation
+repo_url: https://github.com/TECH-CUP-2026-INT/cc-teams-service
+repo_name: TECH-CUP-2026-INT/cc-teams-service
+
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.top
+    - content.code.copy
+    - search.suggest
+
+extra_css:
+  - assets/stylesheets/extra.css
+
+nav:
+  - Home: index.md
+  - Introduction: introduccion.md
+  - Requirements: requerimientos.md
+  - Configuration: configuracion.md
+  - Architecture: arquitectura.md
+  - API: api.md
+  - Testing: pruebas.md
+  - Team: equipo.md
+  - Appendices: anexos.md
+
+markdown_extensions:
+  - admonition
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.highlight
+  - pymdownx.superfences

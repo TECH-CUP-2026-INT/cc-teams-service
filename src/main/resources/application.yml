@@ -13,7 +13,7 @@ server:
 # Identity Service (JWT validation delegated remotely — no shared secret here)
 identity:
   service:
-    base-url: ${IDENTITY_SERVICE_URL:http://localhost:8081}
+    base-url: ${IDENTITY_SERVICE_URL:http://identity-service:5620}
 
 # Communications Service
 communications:

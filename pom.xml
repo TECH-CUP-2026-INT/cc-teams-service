@@ -2,15 +2,18 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>3.5.6</version>
 		<relativePath/>
 	</parent>
+
 	<groupId>co.edu.escuelaing.techcup</groupId>
 	<artifactId>cc-teams-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+<<<<<<< HEAD
 	<name>cc-teams-service</name>
 	<description>Teams microservice for TechCup platform</description>
 
@@ -20,11 +23,42 @@
 		<mapstruct.version>1.5.5.Final</mapstruct.version>
 	</properties>
 
+=======
+	<name>service-teams</name>
+	<description>Microservicio de equipos para la plataforma TechCup</description>
+
+	<properties>
+		<java.version>21</java.version>
+		<mapstruct.version>1.6.3</mapstruct.version>
+		<springdoc.version>2.8.4</springdoc.version>
+		<jacoco.version>0.8.12</jacoco.version>
+		<spring-cloud.version>2025.0.2</spring-cloud.version>
+
+	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-dependencies</artifactId>
+				<version>${spring-cloud.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+>>>>>>> a28c0a12e67422445e723ae92ff92c31dad62065
 	<dependencies>
 		<!-- Spring Boot starters -->
 		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-openfeign</artifactId>
+		</dependency>
+		<!-- Spring Boot Starters -->
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-jpa</artifactId>
+			<artifactId>spring-boot-starter-data-mongodb</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -39,19 +73,37 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 
+<<<<<<< HEAD
 		<!-- PostgreSQL -->
+=======
+
+		<!-- MapStruct -->
+>>>>>>> a28c0a12e67422445e723ae92ff92c31dad62065
 		<dependency>
-			<groupId>org.postgresql</groupId>
-			<artifactId>postgresql</artifactId>
-			<scope>runtime</scope>
+			<groupId>org.mapstruct</groupId>
+			<artifactId>mapstruct</artifactId>
+			<version>${mapstruct.version}</version>
 		</dependency>
 
+<<<<<<< HEAD
 		<!-- JWT -->
+=======
+		<!-- Swagger / OpenAPI -->
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+			<version>${springdoc.version}</version>
+		</dependency>
+
+		<!-- Lombok -->
+>>>>>>> a28c0a12e67422445e723ae92ff92c31dad62065
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt-api</artifactId>
 			<version>${jjwt.version}</version>
 		</dependency>
+
+		<!-- Test -->
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt-impl</artifactId>
@@ -108,10 +160,23 @@
 			</plugin>
 
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>${jacoco.version}</version>
+				<configuration>
+					<excludes>
+						<exclude>**/ServiceTeamsApplication.class</exclude>
+						<exclude>**/*MapperImpl.class</exclude>
+						<exclude>**/*$*$*</exclude>
+						<exclude>**/dto/**</exclude>
+						<exclude>**/document/**</exclude>
+						<exclude>**/repository/**</exclude>
+						<exclude>**/NotificationAdapter.class</exclude>
+					</excludes>
+				</configuration>
 				<executions>
 					<execution>
+<<<<<<< HEAD
 						<id>default-compile</id>
 						<phase>compile</phase>
 						<goals><goal>compile</goal></goals>
@@ -137,11 +202,45 @@
 									<version>${mapstruct.version}</version>
 								</path>
 							</annotationProcessorPaths>
+=======
+						<id>prepare-agent</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>report</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>check</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<rule>
+									<element>BUNDLE</element>
+									<limits>
+										<limit>
+											<counter>LINE</counter>
+											<value>COVEREDRATIO</value>
+											<minimum>0.80</minimum>
+										</limit>
+									</limits>
+								</rule>
+							</rules>
+>>>>>>> a28c0a12e67422445e723ae92ff92c31dad62065
 						</configuration>
 					</execution>
 				</executions>
 			</plugin>
 
+<<<<<<< HEAD
 			<!-- Jacoco -->
 			<plugin>
 				<groupId>org.jacoco</groupId>
@@ -157,8 +256,45 @@
 						<goals><goal>report</goal></goals>
 					</execution>
 				</executions>
+=======
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<useModulePath>false</useModulePath>
+					<systemPropertyVariables>
+						<spring.profiles.active>test</spring.profiles.active>
+					</systemPropertyVariables>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<annotationProcessorPaths>
+						<path>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+						</path>
+						<path>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok-mapstruct-binding</artifactId>
+							<version>0.2.0</version>
+						</path>
+						<path>
+							<groupId>org.mapstruct</groupId>
+							<artifactId>mapstruct-processor</artifactId>
+							<version>${mapstruct.version}</version>
+						</path>
+					</annotationProcessorPaths>
+					<compilerArgs>
+						<arg>-Amapstruct.componentModel=spring</arg>
+						<arg>-Amapstruct.defaultComponentModel=spring</arg>
+					</compilerArgs>
+				</configuration>
+>>>>>>> a28c0a12e67422445e723ae92ff92c31dad62065
 			</plugin>
 		</plugins>
 	</build>
-
 </project>

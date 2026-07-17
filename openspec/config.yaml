@@ -1,0 +1,62 @@
+# openspec/config.yaml
+schema: spec-driven
+
+context: |
+  Project: cc-teams-service (artifactId: service-teams) — TechCup platform teams microservice.
+  Stack: Java 21, Spring Boot 3.5.6 (Maven, multi-layer single module), Spring Cloud 2025.0.2.
+  Architecture: Hexagonal / ports-adapters (domain ports in/out, application use cases, infrastructure adapters).
+  Persistence: MongoDB (spring-boot-starter-data-mongodb, reactive-free), Event/audit and Team documents.
+  Security: Spring Security + JWT filter (identity validated remotely via OpenFeign), role-based.
+  Integrations (outbound adapters): Identity (Feign), Communications/Notification (Feign), Tournament (Feign).
+  Build/CI: Maven Wrapper, GitHub Actions CI builds/tests (mvn clean verify) with MongoDB service container,
+  dockerizes to GHCR (latest/main, branch, sha tags), deploys to Azure Web App for Containers on main.
+  Conventions: package co.edu.escuelaing.techcup.teams; MapStruct + Lombok; springdoc OpenAPI UI at /swagger-ui.html.
+  Config via env vars: MONGODB_URI, JWT_SECRET, INTERNAL_API_KEY, IDENTITY_SERVICE_URL,
+  COMMUNICATIONS_URL, TOURNAMENT_SERVICE_URL, SERVER_PORT (default 8082).
+
+rules:
+  proposal:
+    - Include rollback plan for risky changes (esp. Azure/deploy and secret handling)
+    - Document required GitHub secrets and App Service env vars explicitly
+  specs:
+    - Use Given/When/Then for scenarios
+    - Use RFC 2119 keywords (MUST, SHALL, SHOULD, MAY)
+  design:
+    - Document architecture decisions with rationale
+    - Cover Azure App Service, secrets, and env-var wiring
+  tasks:
+    - Group by phase, use hierarchical numbering
+    - Keep tasks completable in one session
+  apply:
+    guidelines:
+      - Follow existing hexagonal patterns and port/adapter boundaries
+      - Do not introduce shared secrets; identity validation is remote
+    tdd: true
+    test_command: "mvn -q clean verify"
+  verify:
+    test_command: "mvn -q clean verify"
+    build_command: "mvn -q clean package -DskipTests"
+    coverage_threshold: 80
+  archive:
+    - Warn before merging destructive deltas
+
+testing:
+  strict_tdd: true
+  frameworks:
+    - JUnit 5 (spring-boot-starter-test)
+    - Mockito (via spring-boot-starter-test)
+    - spring-security-test
+  runners:
+    - Maven Surefire (unit + integration via same runner; spring.profiles.active=test)
+    - Maven Failsafe not configured (no IT suffix separation)
+  coverage:
+    tool: JaCoCo
+    gate: "verify phase; BUNDLE LINE COVEREDRATIO >= 0.80 (fails build below threshold)"
+    excludes: Application main, MapStruct impls, DTOs, documents, repositories, NotificationAdapter
+  layers:
+    unit: true
+    integration: true   # controller/adapter tests run against Spring context + test profile; no separate MongoDB required for pure unit tests
+    e2e: false
+  notes: |
+    CI runs `mvn clean verify -B` with a mongo:7 service container (MONGODB_URI set) so integration-style
+    tests execute in pipeline. Local runs use spring profile `test`.

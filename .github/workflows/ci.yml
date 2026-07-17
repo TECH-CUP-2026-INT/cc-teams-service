@@ -7,8 +7,8 @@ on:
     branches: [ 'develop', 'main' ]
 
 env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  REGISTRY: techcuptournaments.azurecr.io
+  IMAGE_NAME: cc-teams-service
 
 jobs:
   build-test:
@@ -70,12 +70,12 @@ jobs:
       - name: Build JAR
         run: mvn clean package -DskipTests -B
 
-      - name: Log in to GitHub Container Registry
+      - name: Log in to Azure Container Registry
         uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          username: techcuptournaments
+          password: ${{ secrets.ACR_PASSWORD }}
 
       - name: Extract metadata for Docker
         id: meta
@@ -112,7 +112,7 @@ jobs:
 
       - name: Deploy to Azure Container Apps
         run: |
-          IMAGE_LOWER=$(echo "ghcr.io/${{ github.repository }}:latest" | tr '[:upper:]' '[:lower:]')
+          IMAGE_LOWER="${{ env.REGISTRY }}/cc-teams-service:latest"
           az containerapp update \
             --name teams-service \
             --resource-group techcup \
